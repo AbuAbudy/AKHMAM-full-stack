@@ -1,0 +1,20 @@
+:root {
+    --primary-green: #2e7d32;
+    --accent-gold: #f0e8c2;
+    --hover-gold: #ffd700;
+    --text-color: #1a1a1a;
+    --bg-color: #ffffff;
+    --font-main: 'Segoe UI', sans-serif;
+  }
+  
+  body {
+    margin: 0;
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+  body {
+    font-family: 'Reem Kufi', sans-serif;
+  }
+  
+  

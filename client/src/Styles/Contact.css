@@ -1,0 +1,107 @@
+.contact-container {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: auto;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f9f9f9;
+  }
+  
+  h1 {
+    text-align: center;
+    font-size: 36px;
+    color: #2e2e2e;
+  }
+  
+  .intro-text {
+    text-align: center;
+    margin: 10px auto 40px;
+    max-width: 700px;
+    font-size: 18px;
+    color: #555;
+  }
+  
+  .contact-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: space-between;
+  }
+  
+  .contact-form-section,
+  .contact-info {
+    flex: 1;
+    min-width: 300px;
+  }
+  
+  .contact-form-section h2,
+  .contact-info h2 {
+    color: #222;
+    margin-bottom: 15px;
+  }
+  
+  .contact-form input,
+  .contact-form textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+  
+  .contact-form button {
+    background-color: #007b5e;
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s ease;
+  }
+  
+  .contact-form button:hover {
+    background-color: #005f47;
+  }
+  
+  .contact-info p {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #444;
+  }
+  
+  .social-links h3 {
+    margin-top: 20px;
+    font-size: 18px;
+  }
+  
+  .social-links .icons a {
+    margin-right: 15px;
+    font-size: 22px;
+    color: #007b5e;
+    transition: color 0.3s ease;
+  }
+  
+  .social-links .icons a:hover {
+    color: #004d3f;
+  }
+  
+  .map-container {
+    margin-top: 50px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .contact-title {
+    font-size: 40px;
+    text-align: center;
+    margin: 40px 0 25px;
+    padding: 20px;
+    color: #ffffff;
+    background: linear-gradient(90deg, #00695c, #26a69a);
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
