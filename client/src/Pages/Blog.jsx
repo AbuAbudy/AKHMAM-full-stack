@@ -66,7 +66,7 @@ function Blog() {
 
   return (
     <div className="blog-container">
-      <h1 className="blog-title">AKHMAM Blog</h1>
+      <h1 className="blog-title">AKHMAM Blogs</h1>
       {posts.map((post) => (
         <div key={post.id} className="blog-post">
           <img src={post.image} alt={post.title} className="post-image" />
