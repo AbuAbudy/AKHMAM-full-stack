@@ -1,27 +1,47 @@
 require('dotenv').config();
 const express = require('express');
-const app = express();
-const sequelize = require('./config/database'); // Import the sequelize instance
-const userRoutes = require('./routes/userRoutes'); // Import routes (if you have any)
+const cors = require('cors');
+const path = require('path');
+const sequelize = require('./config/database');
 
-// Middleware to parse incoming JSON requests
+// Routes
+const userRoutes = require('./routes/userRoutes');
+const homeRoutes = require('./routes/homeRoutes');
+const aboutRoutes = require('./routes/aboutRoutes');
+const donateRoutes = require('./routes/donateRoutes');
+const volunteerRoutes = require("./routes/volunteerRoutes");
+const projectRoutes = require("./routes/projectRoutes");
+
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-// Define your routes
-app.use('/api', userRoutes); // Example: routes for users
+// ✅ Serve static files (for images in /public/assets)
+app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
 
-const PORT = process.env.PORT || 3000;
+// ✅ Routes
+app.use('/api', userRoutes);
+app.use('/api', homeRoutes);
+app.use('/api', aboutRoutes);
+app.use('/api/donate', donateRoutes);
+app.use('/api/volunteer', volunteerRoutes);
+app.use("/api", projectRoutes);
 
-// Authenticate the Sequelize connection before starting the server
+
+
+// ✅ Test DB connection & start server
 sequelize.authenticate()
   .then(() => {
-    console.log('Connection to the database has been established successfully.');
-    
-    // Start the server after successful connection
+    console.log('✅ Connected to the database successfully.');
+
     app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+      console.log(`🚀 Server is running at http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
-    console.error('Unable to connect to the database:', err);
+    console.error('❌ Database connection failed:', err);
   });

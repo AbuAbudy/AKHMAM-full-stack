@@ -31,7 +31,7 @@ function Footer() {
           <h3>Contact Us</h3>
           <p>Email: info@akhmam.org</p>
           <p>Phone: +251-900-000000</p>
-          <p>Address: Addis Ababa, Ethiopia</p>
+          <p>Address: Agaro, Ethiopia</p>
           <div className="social-icons">
             <a href="#" aria-label="Facebook"><i className="fab fa-facebook-f"></i></a>
             <a href="#" aria-label="Twitter"><i className="fab fa-twitter"></i></a>

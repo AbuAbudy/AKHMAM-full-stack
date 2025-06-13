@@ -19,4 +19,3 @@ AKHMAM is a full-stack web application designed for a large international charit
 - Database: MySQL, Sequelize
 - Tools: Git, Insomnia (for API testing), Vite
 
-## Project Structure
