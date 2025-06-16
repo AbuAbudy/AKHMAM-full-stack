@@ -2,9 +2,12 @@ import React from 'react';
 import '../styles/Contact.css';
 
 function Contact() {
+  // Map embed URL from your database
+  const mapEmbedUrl = "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d1368.0114569229636!2d36.581984498043816!3d7.859837660916323!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2snl!4v1749997355625!5m2!1sen!2snl";
+
   return (
     <div className="contact-container">
-      <h1 className='contact-title'>Contact AKHMAM</h1>
+      <h1 className="contact-title">Contact AKHMAM</h1>
       <p className="intro-text">
         We’d love to hear from you. Whether you have a question, feedback, or a collaboration idea — our team is always ready to listen.
       </p>
@@ -42,15 +45,17 @@ function Contact() {
         </div>
       </div>
 
-      {/* Optional Map */}
-      <div className="map-container">
+      {/* Google Map Embed */}
+      <div className="map-container" style={{ width: '100%', height: '300px', marginTop: '20px' }}>
         <iframe
           title="AKHMAM Location"
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.674896248862!2d38.77262801533579!3d8.980604093546677!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x164b85773142dfbb%3A0xd5b64dd6ab9b2c1e!2sBole%20Sub-City%2C%20Addis%20Ababa!5e0!3m2!1sen!2set!4v1636969020143!5m2!1sen!2set"
+          src={mapEmbedUrl}
           width="100%"
-          height="300"
+          height="100%"
+          style={{ border: 0 }}
           allowFullScreen=""
           loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
         ></iframe>
       </div>
     </div>

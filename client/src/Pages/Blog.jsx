@@ -1,53 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import '../styles/Blog.css';
 import { FaHeart, FaRegHeart, FaComment } from 'react-icons/fa';
-import postImg1 from '../assets/donate.jpg';
-import postImg2 from '../assets/donate.jpg';
-import postImg3 from '../assets/donate.jpg';
-
-const initialPosts = [
-  {
-    id: 1,
-    title: 'Empowering Women Through Education',
-    image: postImg1,
-    description: 'How AKHMAM is helping women in rural areas access opportunities through learning.',
-    comments: [],
-    likes: [],
-  },
-  {
-    id: 2,
-    title: 'Volunteer Spotlight: Stories of Service',
-    image: postImg2,
-    description: 'Meet our inspiring volunteers and learn about their incredible journeys with AKHMAM.',
-    comments: [],
-    likes: [],
-  },
-  {
-    id: 3,
-    title: 'Monthly Impact Report: April 2025',
-    image: postImg3,
-    description: 'A summary of the lives impacted, funds raised, and milestones achieved last month.',
-    comments: [],
-    likes: [],
-  },
-];
 
 function Blog() {
-  const [posts, setPosts] = useState(initialPosts);
+  const [posts, setPosts] = useState([]);
   const [commentInputs, setCommentInputs] = useState({});
   const currentUser = 'user_123'; // Simulated logged-in user
 
+  // Fetch posts from backend
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await axios.get('/api/blog');
+        setPosts(res.data);
+      } catch (err) {
+        console.error('Error fetching blog posts:', err);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  // Toggle like locally
   const handleLikeToggle = (id) => {
-    setPosts(prev =>
-      prev.map(post => {
+    setPosts((prev) =>
+      prev.map((post) => {
         if (post.id === id) {
-          const alreadyLiked = post.likes.includes(currentUser);
-          return {
-            ...post,
-            likes: alreadyLiked
-              ? post.likes.filter(user => user !== currentUser)
-              : [...post.likes, currentUser],
-          };
+          const alreadyLiked = post.likes?.includes(currentUser);
+          const updatedLikes = alreadyLiked
+            ? post.likes.filter((u) => u !== currentUser)
+            : [...(post.likes || []), currentUser];
+
+          return { ...post, likes: updatedLikes };
         }
         return post;
       })
@@ -62,10 +47,10 @@ function Blog() {
     e.preventDefault();
     if (!commentInputs[id]) return;
     const newComment = { name: 'User', text: commentInputs[id] };
-    setPosts(prev =>
-      prev.map(post =>
+    setPosts((prev) =>
+      prev.map((post) =>
         post.id === id
-          ? { ...post, comments: [...post.comments, newComment] }
+          ? { ...post, comments: [...(post.comments || []), newComment] }
           : post
       )
     );
@@ -81,16 +66,17 @@ function Blog() {
           <div className="post-content">
             <h2>{post.title}</h2>
             <p>{post.description}</p>
+
             <div className="post-actions">
               <button
-                className={`like-button ${post.likes.includes(currentUser) ? 'liked' : ''}`}
+                className={`like-button ${post.likes?.includes(currentUser) ? 'liked' : ''}`}
                 onClick={() => handleLikeToggle(post.id)}
               >
-                {post.likes.includes(currentUser) ? <FaHeart /> : <FaRegHeart />}
+                {post.likes?.includes(currentUser) ? <FaHeart /> : <FaRegHeart />}
               </button>
-              <span>{post.likes.length} Likes</span>
+              <span>{post.likes?.length || 0} Likes</span>
               <span className="comment-count">
-                <FaComment /> {post.comments.length} Comments
+                <FaComment /> {post.comments?.length || 0} Comments
               </span>
             </div>
 
@@ -109,7 +95,7 @@ function Blog() {
             </form>
 
             <div className="comment-list">
-              {post.comments.map((comment, index) => (
+              {post.comments?.map((comment, index) => (
                 <div key={index} className="comment">
                   <strong>{comment.name}</strong>
                   <p>{comment.text}</p>
