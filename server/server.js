@@ -33,7 +33,7 @@ app.use('/api/donate', donateRoutes);
 app.use('/api/volunteer', volunteerRoutes);
 app.use("/api", projectRoutes);
 app.use('/api/blog', blogRoutes);
-app.use('/api/contact', contactRoutes);
+
 
 // ✅ Test DB connection & start server
 sequelize.authenticate()
