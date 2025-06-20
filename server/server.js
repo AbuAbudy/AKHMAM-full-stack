@@ -1,27 +1,50 @@
 require('dotenv').config();
 const express = require('express');
-const app = express();
-const sequelize = require('./config/database'); // Import the sequelize instance
-const userRoutes = require('./routes/userRoutes'); // Import routes (if you have any)
+const cors = require('cors');
+const path = require('path');
+const sequelize = require('./config/database');
 
-// Middleware to parse incoming JSON requests
+// Routes
+const userRoutes = require('./routes/userRoutes');
+const homeRoutes = require('./routes/homeRoutes');
+const aboutRoutes = require('./routes/aboutRoutes');
+const donateRoutes = require('./routes/donateRoutes');
+const volunteerRoutes = require("./routes/volunteerRoutes");
+const projectRoutes = require("./routes/projectRoutes");
+const blogRoutes = require('./routes/blogRoutes');
+const contactRoutes = require('./routes/contactRoutes');
+const authRoutes = require('./routes/authRoutes');
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-// Define your routes
-app.use('/api', userRoutes); // Example: routes for users
+// ✅ Serve static files (for images in /public/assets)
+app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-const PORT = process.env.PORT || 3000;
+// ✅ Routes
+app.use('/api', userRoutes);
+app.use('/api', homeRoutes);
+app.use('/api', aboutRoutes);
+app.use('/api', donateRoutes);
+app.use('/api/volunteers', volunteerRoutes);
+app.use("/api/projects", projectRoutes);
+app.use('/api/blog', blogRoutes);
+app.use('/api/contact', contactRoutes);
 
-// Authenticate the Sequelize connection before starting the server
+// ✅ Test DB connection & start server
 sequelize.authenticate()
   .then(() => {
-    console.log('Connection to the database has been established successfully.');
-    
-    // Start the server after successful connection
+    console.log('✅ Connected to the database successfully.');
+
     app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+      console.log(`🚀 Server is running at http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
-    console.error('Unable to connect to the database:', err);
+    console.error('❌ Database connection failed:', err);
   });

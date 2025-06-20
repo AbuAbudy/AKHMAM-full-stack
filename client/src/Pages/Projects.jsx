@@ -1,42 +1,47 @@
-import React from 'react';
-import '../styles/Projects.css';
-import project1Img from '../assets/banner.jpg';
-import project2Img from '../assets/banner.jpg';
-import project3Img from '../assets/banner.jpg';
-
-const projects = [
-  {
-    title: 'Water for All',
-    description: 'We build clean water wells in remote villages, transforming lives through access to safe drinking water.',
-    image: project1Img,
-    status: 'Ongoing'
-  },
-  {
-    title: 'Empower Youth',
-    description: 'Our scholarship program supports underprivileged students with education, mentorship, and resources.',
-    image: project2Img,
-    status: 'Completed'
-  },
-  {
-    title: 'Food Aid Mission',
-    description: 'Feeding families in need across drought-affected regions with sustainable food packages.',
-    image: project3Img,
-    status: 'Ongoing'
-  }
-];
+import React, { useEffect, useState } from "react";
+import "../styles/Projects.css";
+import axios from "axios";
 
 function Projects() {
+  const [content, setContent] = useState(null);
+
+  useEffect(() => {
+    axios.get("/api/projects")
+      .then(res => setContent(res.data))
+      .catch(err => console.error("Failed to fetch projects content", err));
+  }, []);
+
+  if (!content) return <div>Loading...</div>;
+
+  // ✅ Safely extract sections
+  const hero = content.hero || {};
+  const projectsData = content.projects || {};
+
+  // ✅ Reconstruct project cards
+  const dynamicProjects = [];
+  for (let i = 1; i <= 10; i++) {
+    const title = projectsData[`project_${i}_title`];
+    if (!title) break;
+
+    dynamicProjects.push({
+      title,
+      description: projectsData[`project_${i}_description`] || "",
+      image: projectsData[`project_${i}_image`] || "",
+      status: projectsData[`project_${i}_status`] || "",
+    });
+  }
+
   return (
     <div className="projects-page">
       <header className="projects-hero">
-        <h1>Our Projects</h1>
-        <p>Together, we create lasting impact through meaningful work.</p>
+        <h1>{hero.title}</h1>
+        <p>{hero.subtitle}</p>
       </header>
 
       <section className="projects-grid">
-        {projects.map((project, index) => (
+        {dynamicProjects.map((project, index) => (
           <div className="project-card" key={index}>
-            <img src={project.image} alt={project.title} />
+            <img src={`/uploads/${project.image}`} alt={project.title} />
             <div className="project-content">
               <h3>{project.title}</h3>
               <p>{project.description}</p>

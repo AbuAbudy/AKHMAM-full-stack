@@ -1,53 +1,64 @@
-import React from 'react';
-import heroImage from '../assets/banner.jpg';
-import bank1Logo from '../../src/assets/logo/bank1.jpg';
-import bank2Logo from '../../src/assets/logo/bank2.png';
-import bank3Logo from '../../src/assets/logo/bank3.jpg';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import '../styles/Donate.css';
 
 function Donate() {
+  const [donateData, setDonateData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios.get('http://localhost:5000/api/donate')
+      .then((response) => {
+        setDonateData(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching donate data:', error);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+  if (!donateData) return <p>Failed to load content.</p>;
+
+  const { hero, bankInfo, cta } = donateData;
+
   return (
     <div className="donate-page">
+      {/* Hero Section */}
       <section
         className="donate-hero"
-        style={{ backgroundImage: `url(${heroImage})` }}
+        style={{
+          backgroundImage: `url(${hero.background_image})`,
+        }}
       >
-        <h1>Support AKHMAM</h1>
-        <p>“The best of people are those who are most beneficial to others.” — Prophet Muhammad (ﷺ)</p>
+        <h1>{hero.title}</h1>
+        <p>{hero.subtitle}</p>
       </section>
 
+      {/* Bank Info Section */}
       <section className="bank-info">
         <h2>Donate via Bank Transfer</h2>
         <ul>
-          <li>
-            <img src={bank1Logo} alt="CBE" />
-            <div>
-              <h3>Commercial Bank of Ethiopia</h3>
-              <p>Account Name: AKHMAM Foundation</p>
-              <p>Account Number: 100023456789</p>
-            </div>
-          </li>
-          <li>
-            <img src={bank2Logo} alt="Bank of Abyssinia" />
-            <div>
-              <h3>Bank of Abyssinia</h3>
-              <p>Account Name: AKHMAM Foundation</p>
-              <p>Account Number: 200045678901</p>
-            </div>
-          </li>
-          <li>
-            <img src={bank3Logo} alt="Dashen Bank" />
-            <div>
-              <h3>Dashen Bank</h3>
-              <p>Account Name: AKHMAM Foundation</p>
-              <p>Account Number: 300056789012</p>
-            </div>
-          </li>
+          {[1, 2, 3].map((i) => (
+            <li key={i}>
+              <img
+                src={bankInfo[`bank_${i}_logo`]}
+                alt={bankInfo[`bank_${i}_name`]}
+              />
+              <div>
+                <h3>{bankInfo[`bank_${i}_name`]}</h3>
+                <p>Account Name: {bankInfo[`bank_${i}_account_name`]}</p>
+                <p>Account Number: {bankInfo[`bank_${i}_account_number`]}</p>
+              </div>
+            </li>
+          ))}
         </ul>
       </section>
 
+      {/* Donation Form (static) */}
       <section className="donation-form-section">
-        <h2> Donation Details</h2>
+        <h2>Donation Details</h2>
         <form className="donation-form" onSubmit={(e) => e.preventDefault()}>
           <div className="form-group">
             <label>Name<span>*</span></label>
@@ -69,12 +80,10 @@ function Donate() {
         </form>
       </section>
 
+      {/* CTA Section */}
       <section className="donate-cta">
-        <h3>Your generosity makes a difference</h3>
-        <p>
-          Every birr you give supports dawah, education, and those in need.
-          May Allah reward you abundantly.
-        </p>
+        <h3>{cta.heading}</h3>
+        <p>{cta.paragraph}</p>
       </section>
     </div>
   );

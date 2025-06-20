@@ -1,0 +1,141 @@
+:root {
+  --bg-light: #f4f4f4;
+  --bg-dark: #1e1e1e;
+  --text-light: #333;
+  --text-dark: #eee;
+  --card-light: #ffffff;
+  --card-dark: #2c2c2c;
+  --border-light: #ccc;
+  --border-dark: #444;
+  --btn-light: #1976d2;
+  --btn-dark: #4fc3f7;
+  --btn-hover-light: #1565c0;
+  --btn-hover-dark: #29b6f6;
+}
+
+body.light-mode {
+  background-color: var(--bg-light);
+  color: var(--text-light);
+}
+
+body.dark-mode {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+.admin-home-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 30px;
+  border-radius: 12px;
+  background-color: var(--card-light);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark-mode .admin-home-container {
+  background-color: var(--card-dark);
+}
+
+.admin-home-container h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: inherit;
+}
+
+.home-section {
+  margin-bottom: 40px;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 20px;
+  background-color: var(--bg-light);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+body.dark-mode .home-section {
+  background-color: var(--bg-dark);
+  border-color: var(--border-dark);
+}
+
+.home-section h2 {
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+  color: inherit;
+  text-transform: capitalize;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.field-group label {
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: inherit;
+}
+
+.field-group input[type="text"],
+.field-group input[type="file"] {
+  padding: 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  background-color: #fff;
+  color: #111;
+  transition: border-color 0.3s ease;
+}
+
+body.dark-mode .field-group input[type="text"],
+body.dark-mode .field-group input[type="file"] {
+  background-color: #333;
+  color: #eee;
+  border-color: var(--border-dark);
+}
+
+.update-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-weight: bold;
+  background-color: var(--btn-light);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.update-button:hover {
+  background-color: var(--btn-hover-light);
+}
+
+body.dark-mode .update-button {
+  background-color: var(--btn-dark);
+}
+
+body.dark-mode .update-button:hover {
+  background-color: var(--btn-hover-dark);
+}
+
+/* 🌗 Icon-style toggle */
+.night-toggle {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  background: transparent;
+  border: none;
+  font-size: 1.6rem;
+  color: var(--text-dark);
+  cursor: pointer;
+  z-index: 999;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+body.light-mode .night-toggle {
+  color: var(--text-light);
+}
+
+.night-toggle:hover {
+  transform: scale(1.15);
+}
