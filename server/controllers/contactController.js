@@ -1,31 +1,45 @@
 const ContactContent = require('../models/contactContent');
 
-// GET all contact page contents
-exports.getContactContent = async (req, res) => {
+// GET all grouped by section
+const getContactContent = async (req, res) => {
   try {
-    const contents = await ContactContent.findAll();
-    res.json(contents);
+    const rows = await ContactContent.findAll();
+    const result = {};
+
+    rows.forEach(({ section, key, value }) => {
+      if (!result[section]) result[section] = {};
+      result[section][key] = value;
+    });
+
+    res.json(result);
   } catch (error) {
     console.error('Error fetching contact content:', error);
     res.status(500).json({ message: 'Server error fetching contact content' });
   }
 };
 
-// PUT update contact page content by id
-exports.updateContactContent = async (req, res) => {
+// PUT update value by ID
+const updateContactContent = async (req, res) => {
   const { id } = req.params;
   const { value } = req.body;
 
   try {
-    const content = await ContactContent.findByPk(id);
-    if (!content) {
+    const item = await ContactContent.findByPk(id);
+    if (!item) {
       return res.status(404).json({ message: 'Contact content not found' });
     }
-    content.value = value;
-    await content.save();
-    res.json({ message: 'Contact content updated successfully', content });
+
+    item.value = value;
+    await item.save();
+
+    res.json({ message: 'Contact content updated successfully', content: item });
   } catch (error) {
     console.error('Error updating contact content:', error);
     res.status(500).json({ message: 'Server error updating contact content' });
   }
+};
+
+module.exports = {
+  getContactContent,
+  updateContactContent
 };

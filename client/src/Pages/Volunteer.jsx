@@ -13,7 +13,7 @@ function Volunteer() {
   const [content, setContent] = useState(null);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/volunteer")
+    axios.get("http://localhost:5000/api/volunteers")
 
       .then((res) => setContent(res.data))
       .catch((err) => console.error("Error fetching volunteer content", err));

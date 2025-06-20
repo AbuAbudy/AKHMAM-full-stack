@@ -1,7 +1,12 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); // your sequelize instance
+const sequelize = require('../config/database');
 
 const ContactContent = sequelize.define('ContactContent', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
   section: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -14,7 +19,7 @@ const ContactContent = sequelize.define('ContactContent', {
     type: DataTypes.TEXT,
   },
 }, {
-  tableName: 'contact_contents', // make sure your table name matches
+  tableName: 'contact_contents',
   timestamps: false,
 });
 

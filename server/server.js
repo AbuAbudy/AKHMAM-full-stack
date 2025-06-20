@@ -13,7 +13,7 @@ const volunteerRoutes = require("./routes/volunteerRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const blogRoutes = require('./routes/blogRoutes');
 const contactRoutes = require('./routes/contactRoutes');
-
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -24,16 +24,17 @@ app.use(express.json());
 
 // ✅ Serve static files (for images in /public/assets)
 app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // ✅ Routes
 app.use('/api', userRoutes);
 app.use('/api', homeRoutes);
 app.use('/api', aboutRoutes);
-app.use('/api/donate', donateRoutes);
-app.use('/api/volunteer', volunteerRoutes);
-app.use("/api", projectRoutes);
+app.use('/api', donateRoutes);
+app.use('/api/volunteers', volunteerRoutes);
+app.use("/api/projects", projectRoutes);
 app.use('/api/blog', blogRoutes);
-
+app.use('/api/contact', contactRoutes);
 
 // ✅ Test DB connection & start server
 sequelize.authenticate()
