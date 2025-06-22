@@ -8,12 +8,12 @@ function Donate() {
 
   useEffect(() => {
     axios.get('http://localhost:5000/api/donate')
-      .then((response) => {
-        setDonateData(response.data);
+      .then((res) => {
+        setDonateData(res.data);
         setLoading(false);
       })
-      .catch((error) => {
-        console.error('Error fetching donate data:', error);
+      .catch((err) => {
+        console.error('Error fetching donate content:', err);
         setLoading(false);
       });
   }, []);
@@ -21,55 +21,63 @@ function Donate() {
   if (loading) return <p>Loading...</p>;
   if (!donateData) return <p>Failed to load content.</p>;
 
-  const { hero, bankInfo, cta } = donateData;
+  const { hero = {}, bankInfo = {}, cta = {} } = donateData;
 
   return (
     <div className="donate-page">
       {/* Hero Section */}
-      <section
-        className="donate-hero"
-        style={{
-          backgroundImage: `url(${hero.background_image})`,
-        }}
-      >
-        <h1>{hero.title}</h1>
-        <p>{hero.subtitle}</p>
-      </section>
+<section
+  className="donate-hero"
+  style={{
+    backgroundImage: `url(http://localhost:5000${hero.background_image}?v=${Date.now()})`
+  }}
+>
+  <h1>{hero.title}</h1>
+  <p>{hero.subtitle}</p>
+</section>
+
 
       {/* Bank Info Section */}
       <section className="bank-info">
         <h2>Donate via Bank Transfer</h2>
         <ul>
-          {[1, 2, 3].map((i) => (
-            <li key={i}>
-              <img
-                src={bankInfo[`bank_${i}_logo`]}
-                alt={bankInfo[`bank_${i}_name`]}
-              />
-              <div>
-                <h3>{bankInfo[`bank_${i}_name`]}</h3>
-                <p>Account Name: {bankInfo[`bank_${i}_account_name`]}</p>
-                <p>Account Number: {bankInfo[`bank_${i}_account_number`]}</p>
-              </div>
-            </li>
-          ))}
+          {[1, 2, 3].map((i) => {
+            const logoPath = bankInfo[`bank_${i}_logo`]
+              ? `http://localhost:5000${bankInfo[`bank_${i}_logo`]}`
+              : '';
+            return (
+              <li key={i}>
+                <img
+  src={`http://localhost:5000${bankInfo[`bank_${i}_logo`]}?v=${Date.now()}`}
+  alt={bankInfo[`bank_${i}_name`]}
+  key={i}
+/>
+
+                <div>
+                  <h3>{bankInfo[`bank_${i}_name`]}</h3>
+                  <p>Account Name: {bankInfo[`bank_${i}_account_name`]}</p>
+                  <p>Account Number: {bankInfo[`bank_${i}_account_number`]}</p>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </section>
 
-      {/* Donation Form (static) */}
+      {/* Static Donation Form */}
       <section className="donation-form-section">
         <h2>Donation Details</h2>
         <form className="donation-form" onSubmit={(e) => e.preventDefault()}>
           <div className="form-group">
-            <label>Name<span>*</span></label>
+            <label>Name <span>*</span></label>
             <input type="text" name="name" required />
           </div>
           <div className="form-group">
-            <label>Amount Donated (ETB)<span>*</span></label>
+            <label>Amount Donated (ETB) <span>*</span></label>
             <input type="number" name="amount" required />
           </div>
           <div className="form-group">
-            <label>Reason / Purpose of Donation<span>*</span></label>
+            <label>Reason / Purpose of Donation <span>*</span></label>
             <textarea name="reason" required />
           </div>
           <div className="form-group">

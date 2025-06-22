@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const upload = require('../middleware/uploadMiddleware');
 const { getDonateContent, updateDonateContent } = require('../controllers/donateController');
-const adminMiddleware = require('../middleware/adminMiddleware');
 
-router.get('/donate', getDonateContent); // public route
-router.put('/donate', adminMiddleware, updateDonateContent); // admin protected
+router.get('/', getDonateContent);
+router.put('/', upload.any(), updateDonateContent);
 
 module.exports = router;

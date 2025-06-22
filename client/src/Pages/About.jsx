@@ -33,7 +33,11 @@ function About() {
       {/* Hero Section */}
       <section
         className="about-hero"
-        style={{ backgroundImage: `url(${hero.background_image || ''})` }}
+        style={{
+          backgroundImage: hero.background_image
+            ? `url(http://localhost:5000/${hero.background_image})`
+            : '',
+        }}
       >
         <div className="hero-content">
           <h1>{hero.title}</h1>

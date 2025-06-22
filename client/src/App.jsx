@@ -8,7 +8,6 @@ import Volunteer from './pages/Volunteer';
 import Projects from './pages/Projects';
 import Blog from './pages/Blog';
 import Contact from './pages/Contact';
-import AdminHome from './Pages/admin/AdminHome';
 
 
 
@@ -16,6 +15,9 @@ import AdminHome from './Pages/admin/AdminHome';
 import AdminLogin from './Pages/AdminLogin';
 import AdminDashboard from './Pages/AdminDashboard';
 import AdminRoute from './Utils/AdminRoute';
+import AdminHome from './Pages/admin/AdminHome';
+import AdminAbout from './Pages/admin/AdminAbout';
+import AdminDonate from './Pages/admin/AdminDonate';
 
 function App() {
   return (
@@ -37,6 +39,9 @@ function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>}/>
         <Route path="/admin/home" element={<AdminHome />} />
+        <Route path="/admin/about" element={<AdminRoute><AdminAbout /></AdminRoute>} />
+        <Route path="/admin/donate" element={<AdminRoute><AdminDonate /></AdminRoute>} />
+
 
       </Routes>
     </>

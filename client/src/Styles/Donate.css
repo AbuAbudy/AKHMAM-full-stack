@@ -1,141 +1,143 @@
 .donate-page {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #f7f9fa;
-    color: #333;
-  }
-  
-  /* Hero */
-  .donate-hero {
-    background-size: cover;
-    background-position: center;
-    color: white;
-    text-align: center;
-    padding: 100px 20px;
-  }
-  
-  .donate-hero h1 {
-    font-size: 48px;
-    margin-bottom: 10px;
-    color: #fff;
-  }
-  
-  .donate-hero p {
-    font-size: 20px;
-    font-style: italic;
-  }
-  
-  /* Bank Info Section */
-  .bank-info {
-    padding: 40px 20px;
-    max-width: 900px;
-    margin: auto;
-  }
-  
-  .bank-info h2 {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #007e33;
-  }
-  
-  .bank-info ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .bank-info li {
-    display: flex;
-    align-items: center;
-    background: #fff;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  }
-  
-  .bank-info img {
-    width: 60px;
-    height: auto;
-    margin-right: 20px;
-  }
-  
-  /* Form Section */
-  .donation-form-section {
-    padding: 40px 20px;
-    background-color: #ffffff;
-    max-width: 800px;
-    margin: 40px auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  }
-  
-  .donation-form-section h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #007e33;
-  }
-  
-  .donation-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .form-group {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .form-group label {
-    font-weight: 600;
-    margin-bottom: 5px;
-  }
-  
-  .form-group span {
-    color: red;
-  }
-  
-  .form-group input,
-  .form-group textarea {
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 16px;
-  }
-  
-  .donation-form button {
-    background-color: #007e33;
-    color: white;
-    padding: 14px;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  
-  .donation-form button:hover {
-    background-color: #005a25;
-  }
-  
-  /* CTA Card */
-  .donate-cta {
-    background-color: white;
-    margin: 40px auto;
-    padding: 30px;
-    max-width: 800px;
-    text-align: center;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  }
-  
-  .donate-cta h3 {
-    font-size: 24px;
-    margin-bottom: 10px;
-    color: #007e33;
-  }
-  
-  .donate-cta p {
-    font-size: 16px;
-    font-style: italic;
-  }
-  
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f7f9fa;
+  color: #333;
+}
+
+/* Hero Section */
+.donate-hero {
+  background-size: cover;
+  background-position: center;
+  color: white;
+  text-align: center;
+  padding: 100px 20px;
+  background-blend-mode: darken;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.donate-hero h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.donate-hero p {
+  font-size: 20px;
+  font-style: italic;
+}
+
+/* Bank Info Section */
+.bank-info {
+  padding: 40px 20px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.bank-info h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #007e33;
+}
+
+.bank-info ul {
+  list-style: none;
+  padding: 0;
+}
+
+.bank-info li {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.bank-info img {
+  width: 60px;
+  height: auto;
+  margin-right: 20px;
+  border-radius: 4px;
+}
+
+/* Donation Form */
+.donation-form-section {
+  padding: 40px 20px;
+  background-color: #ffffff;
+  max-width: 800px;
+  margin: 40px auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.donation-form-section h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #007e33;
+}
+
+.donation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.form-group span {
+  color: red;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.donation-form button {
+  background-color: #007e33;
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.donation-form button:hover {
+  background-color: #005a25;
+}
+
+/* CTA Section */
+.donate-cta {
+  background-color: white;
+  margin: 40px auto;
+  padding: 30px;
+  max-width: 800px;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.donate-cta h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #007e33;
+}
+
+.donate-cta p {
+  font-size: 16px;
+  font-style: italic;
+}

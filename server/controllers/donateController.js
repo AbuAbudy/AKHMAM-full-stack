@@ -1,3 +1,4 @@
+const path = require('path');
 const DonateContent = require('../models/DonateContent');
 
 const groupBySection = (data) => {
@@ -12,30 +13,53 @@ const groupBySection = (data) => {
 const getDonateContent = async (req, res) => {
   try {
     const rows = await DonateContent.findAll();
-    const structuredData = groupBySection(rows);
-    res.json(structuredData);
-  } catch (error) {
-    console.error('Error fetching donate content:', error);
+    const structured = groupBySection(rows);
+    res.json(structured);
+  } catch (err) {
+    console.error('❌ Error fetching donate content:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
 const updateDonateContent = async (req, res) => {
-  const { section, updates } = req.body;
-  if (!section || !updates) {
-    return res.status(400).json({ error: 'Section and updates object are required' });
+  const section = req.body.section;
+  if (!section) {
+    return res.status(400).json({ error: 'Section is required' });
+  }
+
+  const updates = {};
+
+  // Text fields
+  for (const key in req.body) {
+    if (key !== 'section') {
+      updates[key] = req.body[key];
+    }
+  }
+
+  // Uploaded images
+  if (req.files?.length > 0) {
+    req.files.forEach(file => {
+      const relativePath = path.posix.join('assets', 'uploads', file.filename);
+      updates[file.fieldname] = `/${relativePath}`;
+    });
   }
 
   try {
-    for (const key in updates) {
-      await DonateContent.update(
-        { value: updates[key] },
-        { where: { section, key_name: key } }
-      );
-    }
-    res.json({ message: `Donate content for section "${section}" updated successfully.` });
-  } catch (error) {
-    console.error('Error updating donate content:', error);
+    // Save to DB
+    await Promise.all(Object.entries(updates).map(async ([key_name, value]) => {
+      const [record, created] = await DonateContent.findOrCreate({
+        where: { section, key_name },
+        defaults: { value }
+      });
+      if (!created) {
+        record.value = value;
+        await record.save();
+      }
+    }));
+
+    res.json({ message: `${section} section updated successfully.` });
+  } catch (err) {
+    console.error('❌ Error updating content:', err);
     res.status(500).json({ error: 'Failed to update donate content' });
   }
 };

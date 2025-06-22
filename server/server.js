@@ -30,11 +30,12 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use('/api', userRoutes);
 app.use('/api', homeRoutes);
 app.use('/api', aboutRoutes);
-app.use('/api', donateRoutes);
+app.use('/api/donate', donateRoutes);
 app.use('/api/volunteers', volunteerRoutes);
-app.use("/api/projects", projectRoutes);
+app.use('/api/projects', projectRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/auth', authRoutes);  // Added auth routes
 
 // ✅ Test DB connection & start server
 sequelize.authenticate()

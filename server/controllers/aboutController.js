@@ -1,38 +1,46 @@
-// server/controllers/aboutController.js
-const AboutContent = require('../models/aboutContentModel');
+const AboutContent = require('../models/aboutContent');
+const path = require('path');
 
-// GET /api/about - Public
+const groupBySection = (data) => {
+  const result = {};
+  data.forEach(({ section, key_name, value }) => {
+    if (!result[section]) result[section] = {};
+    result[section][key_name] = value;
+  });
+  return result;
+};
+
 const getAboutContent = async (req, res) => {
   try {
     const contents = await AboutContent.findAll();
-
-    const formattedContent = {};
-    contents.forEach(item => {
-      if (!formattedContent[item.section]) {
-        formattedContent[item.section] = {};
-      }
-      formattedContent[item.section][item.key_name] = item.value;
-    });
-
-    res.json(formattedContent);
+    res.json(groupBySection(contents));
   } catch (error) {
     console.error('Error fetching about content:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ error: 'Failed to fetch about page content' });
   }
 };
 
-// PUT /api/about - Admin-only
 const updateAboutContent = async (req, res) => {
-  const { section, updates } = req.body;
+  const section = req.body.section;
+  if (!section) return res.status(400).json({ error: 'Section is required' });
 
-  if (!section || typeof updates !== 'object') {
-    return res.status(400).json({ error: 'Section and updates object are required' });
+  const updates = {};
+
+  for (const key in req.body) {
+    if (key !== 'section') {
+      updates[key] = req.body[key];
+    }
+  }
+
+  if (req.files && req.files.length > 0) {
+    req.files.forEach(file => {
+      const relativePath = path.join('assets', 'uploads', file.filename).replace(/\\/g, '/');
+      updates[file.fieldname] = relativePath;
+    });
   }
 
   try {
-    for (const key_name in updates) {
-      const value = updates[key_name];
-
+    await Promise.all(Object.entries(updates).map(async ([key_name, value]) => {
       const [record, created] = await AboutContent.findOrCreate({
         where: { section, key_name },
         defaults: { value },
@@ -42,7 +50,7 @@ const updateAboutContent = async (req, res) => {
         record.value = value;
         await record.save();
       }
-    }
+    }));
 
     res.json({ message: `About content for section "${section}" updated successfully.` });
   } catch (error) {

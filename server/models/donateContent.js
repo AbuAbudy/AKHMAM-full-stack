@@ -1,7 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-
 const DonateContent = sequelize.define('DonateContent', {
   section: {
     type: DataTypes.STRING,

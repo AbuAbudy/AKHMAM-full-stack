@@ -1,148 +1,147 @@
 .about-page {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
-    line-height: 1.8;
-  }
-  
-  .about-hero {
-    background-size: cover;
-    background-position: center;
-    padding: 100px 20px;
-    text-align: center;
-    color: white;
-    background-color: rgba(0, 0, 0, 0.3);
-    background-blend-mode: darken;
-  }
-  
-  .hero-content h1 {
-    font-size: 50px;
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: #fff;
-  }
-  
-  .hero-content p {
-    font-size: 20px;
-    margin: 5px 0;
-    font-family: 'Amiri', serif;
-  }
-  
-  .mission-vision {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    padding: 60px 20px;
-    background-color: #f9f9f9;
-  }
-  
-  .mission, .vision {
-    flex: 1 1 300px;
-    margin: 20px;
-    text-align: center;
-  }
-  
-  .mission h2, .vision h2 {
-    font-size: 28px;
-    color: #007B5E;
-    margin-bottom: 10px;
-  }
-  
-  .what-we-do {
-    background-color: #fff;
-    padding: 50px 20px;
-    text-align: center;
-  }
-  
-  .what-we-do h2 {
-    font-size: 28px;
-    color: #007B5E;
-    margin-bottom: 20px;
-  }
-  
-  .what-we-do ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .what-we-do li {
-    margin: 10px 0;
-    font-size: 18px;
-  }
-  
-  .core-values {
-    padding: 60px 20px;
-    text-align: center;
-    background-color: #eef4f7;
-  }
-  
-  .core-values h2 {
-    font-size: 28px;
-    margin-bottom: 30px;
-    color: #007B5E;
-  }
-  
-  .values-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-  }
-  
-  .value-card {
-    background-color: #dceef2;
-    padding: 20px 30px;
-    border-radius: 10px;
-    font-size: 18px;
-    min-width: 150px;
-    transition: 0.3s;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .value-card:hover {
-    background-color: #c1e3eb;
-  }
-  
-  .our-story {
-    padding: 60px 20px;
-    background-color: #fdfcfb;
-    text-align: center;
-  }
-  
-  .our-story h2 {
-    font-size: 28px;
-    margin-bottom: 20px;
-    color: #007B5E;
-  }
-  
-  .about-cta {
-    padding: 60px 20px;
-    background-color: #007B5E;
-    text-align: center;
-    color: white;
-  }
-  
-  .about-cta h2 {
-    font-size: 28px;
-    margin-bottom: 15px;
-  }
-  
-  .about-cta p {
-    font-size: 18px;
-    margin-bottom: 20px;
-  }
-  
-  .about-cta button {
-    background-color: white;
-    color: #007B5E;
-    padding: 12px 24px;
-    font-size: 16px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .about-cta button:hover {
-    background-color: #e0f2f1;
-  }
-  
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  line-height: 1.8;
+}
+
+.about-hero {
+  background-size: cover;
+  background-position: center;
+  padding: 100px 20px;
+  text-align: center;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.3);
+  background-blend-mode: darken;
+}
+
+.hero-content h1 {
+  font-size: 50px;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.hero-content p {
+  font-size: 20px;
+  margin: 5px 0;
+  font-family: 'Amiri', serif;
+}
+
+.mission-vision {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 60px 20px;
+  background-color: #f9f9f9;
+}
+
+.mission, .vision {
+  flex: 1 1 300px;
+  margin: 20px;
+  text-align: center;
+}
+
+.mission h2, .vision h2 {
+  font-size: 28px;
+  color: #007B5E;
+  margin-bottom: 10px;
+}
+
+.what-we-do {
+  background-color: #fff;
+  padding: 50px 20px;
+  text-align: center;
+}
+
+.what-we-do h2 {
+  font-size: 28px;
+  color: #007B5E;
+  margin-bottom: 20px;
+}
+
+.what-we-do ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.what-we-do li {
+  margin: 10px 0;
+  font-size: 18px;
+}
+
+.core-values {
+  padding: 60px 20px;
+  text-align: center;
+  background-color: #eef4f7;
+}
+
+.core-values h2 {
+  font-size: 28px;
+  margin-bottom: 30px;
+  color: #007B5E;
+}
+
+.values-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.value-card {
+  background-color: #dceef2;
+  padding: 20px 30px;
+  border-radius: 10px;
+  font-size: 18px;
+  min-width: 150px;
+  transition: 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.value-card:hover {
+  background-color: #c1e3eb;
+}
+
+.our-story {
+  padding: 60px 20px;
+  background-color: #fdfcfb;
+  text-align: center;
+}
+
+.our-story h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #007B5E;
+}
+
+.about-cta {
+  padding: 60px 20px;
+  background-color: #007B5E;
+  text-align: center;
+  color: white;
+}
+
+.about-cta h2 {
+  font-size: 28px;
+  margin-bottom: 15px;
+}
+
+.about-cta p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.about-cta button {
+  background-color: white;
+  color: #007B5E;
+  padding: 12px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.about-cta button:hover {
+  background-color: #e0f2f1;
+}
