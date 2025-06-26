@@ -15,6 +15,8 @@ const blogRoutes = require('./routes/blogRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const authRoutes = require('./routes/authRoutes');
 
+
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -23,6 +25,7 @@ app.use(cors());
 app.use(express.json());
 
 // ✅ Serve static files (for images in /public/assets)
+app.use('/assets/uploads', express.static(path.join(__dirname, 'public/assets/uploads')));
 app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 

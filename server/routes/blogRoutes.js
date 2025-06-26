@@ -1,8 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const blogController = require('../controllers/blogController');
+const upload = require('../middleware/uploadMiddleware');
+const {
+  getAllPosts,
+  createPost,
+  updatePost,
+  deletePost
+} = require('../controllers/blogController');
 
-router.get('/', blogController.getAllPosts);
-router.put('/:id', blogController.updatePost); // <-- Admin update route
+router.get('/', getAllPosts);
+router.post('/', upload.single('image'), createPost);
+router.put('/:id', upload.single('image'), updatePost);
+router.delete('/:id', deletePost);
 
 module.exports = router;

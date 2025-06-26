@@ -1,11 +1,11 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const contactController = require('../controllers/contactController');
+const contactController = require("../controllers/contactController");
 
-// GET all contact contents (grouped by section)
-router.get('/', contactController.getContactContent);
+// Public - get all contact content grouped by section
+router.get("/", contactController.getContactContent);
 
-// PUT update by ID (admin only, protect this route in the future)
-router.put('/:id', contactController.updateContactContent);
+// Admin-only - update a full section by section name
+router.put("/:section", contactController.updateContactSection);
 
 module.exports = router;

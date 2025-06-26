@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import ScrollToTop from './Utils/ScrollToTop';
+import { ToastContainer } from 'react-toastify';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import About from './pages/About';
@@ -18,10 +19,15 @@ import AdminRoute from './Utils/AdminRoute';
 import AdminHome from './Pages/admin/AdminHome';
 import AdminAbout from './Pages/admin/AdminAbout';
 import AdminDonate from './Pages/admin/AdminDonate';
+import AdminVolunteer from './Pages/admin/AdminVolunteer';
+import AdminProjects from './Pages/admin/AdminProjects';
+import AdminBlog from './Pages/admin/AdminBlog';
+import AdminContact from './Pages/admin/AdminContact';
 
 function App() {
   return (
     <>
+    <ToastContainer position="top-right" autoClose={3000} />
       <ScrollToTop />
       <Routes>
         {/* Public layout */}
@@ -41,7 +47,10 @@ function App() {
         <Route path="/admin/home" element={<AdminHome />} />
         <Route path="/admin/about" element={<AdminRoute><AdminAbout /></AdminRoute>} />
         <Route path="/admin/donate" element={<AdminRoute><AdminDonate /></AdminRoute>} />
-
+        <Route path="/admin/volunteer" element={<AdminRoute><AdminVolunteer /></AdminRoute>} />
+        <Route path="/admin/Projects" element={<AdminRoute><AdminProjects /></AdminRoute>} />
+        <Route path="/admin/blog" element={<AdminBlog />} />
+        <Route path="/admin/contact" element={<AdminRoute><AdminContact /></AdminRoute>} />
 
       </Routes>
     </>

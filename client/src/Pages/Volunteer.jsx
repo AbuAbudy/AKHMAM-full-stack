@@ -13,8 +13,8 @@ function Volunteer() {
   const [content, setContent] = useState(null);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/volunteers")
-
+    axios
+      .get("http://localhost:5000/api/volunteers")
       .then((res) => setContent(res.data))
       .catch((err) => console.error("Error fetching volunteer content", err));
   }, []);
@@ -25,7 +25,14 @@ function Volunteer() {
     <div className="volunteer-page">
       {/* Hero Section */}
       {content.hero && (
-        <section className="volunteer-hero">
+        <section
+          className="volunteer-hero"
+          style={{
+            backgroundImage: content.hero.background_image
+              ? `url(http://localhost:5000${content.hero.background_image}?v=${Date.now()})`
+              : "none",
+          }}
+        >
           <div className="overlay">
             <h1>{content.hero.title}</h1>
             <p>{content.hero.subtitle}</p>

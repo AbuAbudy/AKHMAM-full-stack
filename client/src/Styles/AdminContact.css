@@ -1,0 +1,147 @@
+/* AdminContact.css */
+
+.admin-container {
+  max-width: 900px;
+  margin: 40px auto;
+  background-color: #fff;
+  color: #222;
+  border-radius: 8px;
+  padding: 30px 40px;
+  box-shadow: 0 0 20px rgb(0 0 0 / 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.admin-container.dark {
+  background-color: #1e1e2f;
+  color: #ccc;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.admin-header h2 {
+  font-weight: 700;
+  font-size: 2.1rem;
+}
+
+.dark-mode-toggle {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: inherit;
+  transition: transform 0.3s ease;
+}
+
+.dark-mode-toggle:hover {
+  transform: rotate(20deg);
+}
+
+.admin-section {
+  margin-bottom: 40px;
+  border-top: 1px solid #ddd;
+  padding-top: 30px;
+}
+
+.admin-section:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.admin-section h3 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 6px;
+  color: #007bff;
+}
+
+.admin-container.dark .admin-section h3 {
+  color: #66aaff;
+  border-color: #66aaff;
+}
+
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.admin-field label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 1.05rem;
+}
+
+.admin-field input,
+.admin-field textarea {
+  padding: 10px 14px;
+  border: 1.5px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  resize: vertical;
+  transition: border-color 0.25s ease;
+  background-color: #fff;
+  color: #222;
+}
+
+.admin-container.dark .admin-field input,
+.admin-container.dark .admin-field textarea {
+  background-color: #2a2a3d;
+  color: #eee;
+  border-color: #555;
+}
+
+.admin-field input:focus,
+.admin-field textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 6px #007bffaa;
+}
+
+.admin-container.dark .admin-field input:focus,
+.admin-container.dark .admin-field textarea:focus {
+  border-color: #66aaff;
+  box-shadow: 0 0 6px #66aaffaa;
+}
+
+.section-update-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+  margin-top: 8px;
+  user-select: none;
+  font-weight: 600;
+}
+
+.section-update-btn:hover {
+  background-color: #0056b3;
+}
+
+.admin-container.dark .section-update-btn {
+  background-color: #66aaff;
+  color: #222;
+}
+
+.admin-container.dark .section-update-btn:hover {
+  background-color: #4488ff;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .admin-container {
+    padding: 20px;
+    margin: 20px;
+  }
+}

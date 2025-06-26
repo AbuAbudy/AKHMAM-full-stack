@@ -1,3 +1,5 @@
+// server/controllers/projectController.js
+const path = require("path");
 const ProjectContent = require("../models/ProjectContent");
 
 const getProjectContent = async (req, res) => {
@@ -18,22 +20,40 @@ const getProjectContent = async (req, res) => {
 };
 
 const updateProjectContent = async (req, res) => {
+  const { section, ...textFields } = req.body;
+
+  if (!section) {
+    return res.status(400).json({ error: "Section is required" });
+  }
+
+  const updates = { ...textFields };
+
+  if (req.files && req.files.length > 0) {
+    req.files.forEach((file) => {
+      const relativePath = path.posix.join("uploads", file.filename);
+updates[file.fieldname] = relativePath;
+
+
+
+    });
+  }
+
   try {
-    const { section, key, value } = req.body;
+    await Promise.all(
+      Object.entries(updates).map(async ([key, value]) => {
+        const [record, created] = await ProjectContent.findOrCreate({
+          where: { section, key },
+          defaults: { value },
+        });
 
-    if (!section || !key || !value) {
-      return res.status(400).json({ message: "section, key, and value are required" });
-    }
+        if (!created) {
+          record.value = value;
+          await record.save();
+        }
+      })
+    );
 
-    const existing = await ProjectContent.findOne({ where: { section, key } });
-    if (existing) {
-      existing.value = value;
-      await existing.save();
-    } else {
-      await ProjectContent.create({ section, key, value });
-    }
-
-    res.json({ message: "Project content updated successfully" });
+    res.json({ message: `Project section "${section}" updated successfully.` });
   } catch (err) {
     console.error("Failed to update project content", err);
     res.status(500).json({ error: "Internal Server Error" });

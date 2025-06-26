@@ -1,3 +1,4 @@
+const path = require("path");
 const VolunteerContent = require("../models/VolunteerContent");
 
 // GET all volunteer content, grouped by section
@@ -6,7 +7,7 @@ exports.getVolunteerPageContent = async (req, res) => {
     const rows = await VolunteerContent.findAll();
 
     const content = {};
-    rows.forEach(row => {
+    rows.forEach((row) => {
       if (!content[row.section]) content[row.section] = {};
       content[row.section][row.key] = row.value;
     });
@@ -18,26 +19,46 @@ exports.getVolunteerPageContent = async (req, res) => {
   }
 };
 
-// PUT update or create a volunteer content key-value in a section
+// PUT update or create volunteer content, handle text and files
 exports.updateVolunteerContent = async (req, res) => {
   try {
-    const { section, key, value } = req.body;
+    const { section, ...textFields } = req.body;
 
-    if (!section || !key || !value) {
-      return res.status(400).json({ message: "Section, key and value are required" });
+    if (!section) {
+      return res.status(400).json({ message: "Section is required" });
     }
 
-    const content = await VolunteerContent.findOne({ where: { section, key } });
-    if (content) {
-      content.value = value;
-      await content.save();
-    } else {
-      await VolunteerContent.create({ section, key, value });
+    const updates = { ...textFields };
+
+    // Handle uploaded files
+    if (req.files && req.files.length > 0) {
+      req.files.forEach((file) => {
+        const relativePath = path.posix.join("assets", "uploads", file.filename);
+        updates[file.fieldname] = `/${relativePath}`;
+      });
     }
 
-    res.status(200).json({ message: "Volunteer content updated successfully" });
+    // Update or create all key-value pairs
+    await Promise.all(
+      Object.entries(updates).map(async ([key, value]) => {
+        const [record, created] = await VolunteerContent.findOrCreate({
+          where: { section, key },
+          defaults: { value },
+        });
+        if (!created) {
+          record.value = value;
+          await record.save();
+        }
+      })
+    );
+
+    res
+      .status(200)
+      .json({ message: `✅ "${section}" content updated successfully.` });
   } catch (error) {
     console.error("Error updating volunteer content:", error);
-    res.status(500).json({ message: "Failed to update volunteer content", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to update volunteer content", error: error.message });
   }
 };

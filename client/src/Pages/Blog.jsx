@@ -6,32 +6,24 @@ import { FaHeart, FaRegHeart, FaComment } from 'react-icons/fa';
 function Blog() {
   const [posts, setPosts] = useState([]);
   const [commentInputs, setCommentInputs] = useState({});
-  const currentUser = 'user_123'; // Simulated logged-in user
+  const currentUser = 'user_123'; // Simulated user
 
-  // Fetch posts from backend
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const res = await axios.get('/api/blog');
-        setPosts(res.data);
-      } catch (err) {
-        console.error('Error fetching blog posts:', err);
-      }
-    };
-
-    fetchPosts();
+    axios.get('/api/blog')
+      .then(res => setPosts(res.data))
+      .catch(err => console.error('Error fetching blog posts:', err));
   }, []);
 
-  // Toggle like locally
   const handleLikeToggle = (id) => {
-    setPosts((prev) =>
-      prev.map((post) => {
+    setPosts(prev =>
+      prev.map(post => {
         if (post.id === id) {
-          const alreadyLiked = post.likes?.includes(currentUser);
-          const updatedLikes = alreadyLiked
-            ? post.likes.filter((u) => u !== currentUser)
+          const liked = post.likes?.includes(currentUser);
+          const updatedLikes = liked
+            ? post.likes.filter(u => u !== currentUser)
             : [...(post.likes || []), currentUser];
 
+          axios.put(`/api/blog/${id}`, { ...post, likes: updatedLikes });
           return { ...post, likes: updatedLikes };
         }
         return post;
@@ -46,23 +38,28 @@ function Blog() {
   const handleCommentSubmit = (e, id) => {
     e.preventDefault();
     if (!commentInputs[id]) return;
+
     const newComment = { name: 'User', text: commentInputs[id] };
-    setPosts((prev) =>
-      prev.map((post) =>
-        post.id === id
-          ? { ...post, comments: [...(post.comments || []), newComment] }
-          : post
-      )
+    setPosts(prev =>
+      prev.map(post => {
+        if (post.id === id) {
+          const updatedComments = [...(post.comments || []), newComment];
+          axios.put(`/api/blog/${id}`, { ...post, comments: updatedComments });
+          return { ...post, comments: updatedComments };
+        }
+        return post;
+      })
     );
+
     setCommentInputs({ ...commentInputs, [id]: '' });
   };
 
   return (
     <div className="blog-container">
       <h1 className="blog-title">AKHMAM Blog</h1>
-      {posts.map((post) => (
+      {posts.map(post => (
         <div key={post.id} className="blog-post">
-          <img src={post.image} alt={post.title} className="post-image" />
+          <img src={`http://localhost:5000/${post.image}`} alt={post.title} className="post-image" />
           <div className="post-content">
             <h2>{post.title}</h2>
             <p>{post.description}</p>
@@ -80,10 +77,7 @@ function Blog() {
               </span>
             </div>
 
-            <form
-              onSubmit={(e) => handleCommentSubmit(e, post.id)}
-              className="comment-form"
-            >
+            <form onSubmit={(e) => handleCommentSubmit(e, post.id)} className="comment-form">
               <textarea
                 rows="2"
                 placeholder="Write a comment..."

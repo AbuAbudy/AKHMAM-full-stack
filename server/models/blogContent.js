@@ -19,9 +19,11 @@ const BlogContent = sequelize.define('BlogContent', {
   },
   likes: {
     type: DataTypes.JSON,
+    defaultValue: [],
   },
   comments: {
     type: DataTypes.JSON,
+    defaultValue: [],
   },
 }, {
   tableName: 'blog_contents',

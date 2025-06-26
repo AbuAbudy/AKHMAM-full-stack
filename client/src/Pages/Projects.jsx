@@ -13,11 +13,9 @@ function Projects() {
 
   if (!content) return <div>Loading...</div>;
 
-  // ✅ Safely extract sections
   const hero = content.hero || {};
   const projectsData = content.projects || {};
 
-  // ✅ Reconstruct project cards
   const dynamicProjects = [];
   for (let i = 1; i <= 10; i++) {
     const title = projectsData[`project_${i}_title`];
@@ -41,7 +39,7 @@ function Projects() {
       <section className="projects-grid">
         {dynamicProjects.map((project, index) => (
           <div className="project-card" key={index}>
-            <img src={`/uploads/${project.image}`} alt={project.title} />
+            <img src={`http://localhost:5000/${project.image}`} alt={project.title} />
             <div className="project-content">
               <h3>{project.title}</h3>
               <p>{project.description}</p>
