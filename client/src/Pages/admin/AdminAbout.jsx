@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../styles/AdminHome.css';
-import { FaSun, FaMoon } from 'react-icons/fa';
+import { FaSun, FaMoon, FaPlus, FaTrash } from 'react-icons/fa';
 
 function AdminAbout() {
   const [aboutContent, setAboutContent] = useState({});
@@ -10,14 +10,46 @@ function AdminAbout() {
   const [loading, setLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
 
+  const [whatWeDoList, setWhatWeDoList] = useState([]);
+  const [coreValuesList, setCoreValuesList] = useState([]);
+  const [loadingLists, setLoadingLists] = useState(true);
+
   useEffect(() => {
-    axios.get('http://localhost:5000/api/about')
-      .then((res) => {
+    const token = localStorage.getItem('token');
+
+    const fetchContent = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/api/about', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setAboutContent(res.data);
         setUpdatedContent(res.data);
         setLoading(false);
-      })
-      .catch((err) => console.error('Error fetching about content:', err));
+      } catch (err) {
+        console.error('Error fetching about content:', err);
+      }
+    };
+
+    const fetchLists = async () => {
+      try {
+        const [whatRes, coreRes] = await Promise.all([
+          axios.get('http://localhost:5000/api/about/list/whatWeDo', {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get('http://localhost:5000/api/about/list/coreValues', {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+        setWhatWeDoList(whatRes.data);
+        setCoreValuesList(coreRes.data);
+        setLoadingLists(false);
+      } catch (err) {
+        console.error('Error fetching list items:', err);
+      }
+    };
+
+    fetchContent();
+    fetchLists();
 
     const mode = localStorage.getItem('mode') || 'light';
     setDarkMode(mode === 'dark');
@@ -37,8 +69,8 @@ function AdminAbout() {
       ...prev,
       [section]: {
         ...prev[section],
-        [key]: value
-      }
+        [key]: value,
+      },
     }));
   };
 
@@ -47,8 +79,8 @@ function AdminAbout() {
       ...prev,
       [section]: {
         ...prev[section],
-        [key]: file
-      }
+        [key]: file,
+      },
     }));
   };
 
@@ -61,16 +93,15 @@ function AdminAbout() {
     formData.append('section', section);
 
     for (const key in updates) {
-      const value = updates[key];
-      formData.append(key, value);
+      formData.append(key, updates[key]);
     }
 
     try {
       const res = await axios.put('http://localhost:5000/api/about', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       });
       alert(res.data.message || 'Section updated!');
     } catch (error) {
@@ -81,7 +112,71 @@ function AdminAbout() {
     }
   };
 
-  if (loading) return <p>Loading about content...</p>;
+  const addListItem = async (section) => {
+    const token = localStorage.getItem('token');
+    const newValue = prompt('Enter new item text:');
+    if (!newValue) return;
+
+    try {
+      await axios.post(
+        `http://localhost:5000/api/about/list/${section}`,
+        { value: newValue },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      await refreshList(section);
+    } catch (error) {
+      alert('Failed to add item: ' + (error.response?.data?.error || error.message));
+    }
+  };
+
+  const updateListItem = async (section, id, newValue) => {
+    if (!newValue) return alert('Value cannot be empty');
+    const token = localStorage.getItem('token');
+
+    try {
+      await axios.put(
+        `http://localhost:5000/api/about/list/item/${id}`,
+        { value: newValue },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      await refreshList(section);
+    } catch (error) {
+      alert('Failed to update item: ' + (error.response?.data?.error || error.message));
+    }
+  };
+
+  const deleteListItem = async (section, id) => {
+    if (!window.confirm('Are you sure you want to delete this item?')) return;
+    const token = localStorage.getItem('token');
+
+    try {
+      await axios.delete(`http://localhost:5000/api/about/list/item/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      await refreshList(section);
+    } catch (error) {
+      alert('Failed to delete item: ' + (error.response?.data?.error || error.message));
+    }
+  };
+
+  const refreshList = async (section) => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/about/list/${section}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
+
+      if (section === 'whatWeDo') setWhatWeDoList(res.data);
+      else if (section === 'coreValues') setCoreValuesList(res.data);
+    } catch (err) {
+      console.error('Error refreshing list:', err);
+    }
+  };
+
+  if (loading || loadingLists) return <p>Loading about content...</p>;
 
   return (
     <div className="admin-home-container">
@@ -91,46 +186,127 @@ function AdminAbout() {
 
       <h1>Manage About Page Content</h1>
 
-      {Object.entries(aboutContent).map(([section, data]) => (
-        <div key={section} className="home-section">
-          <h2>{section.toUpperCase()}</h2>
+      {Object.entries(aboutContent).map(([section, data]) => {
+        if (section === 'whatWeDo' || section === 'coreValues') return null;
+        return (
+          <div key={section} className="home-section">
+            <h2>{section.toUpperCase()}</h2>
 
-          {Object.entries(data).map(([key, value]) => (
-            <div key={key} className="field-group">
-              <label>{key}:</label>
-              {key.toLowerCase().includes('image') ? (
-                <>
+            {Object.entries(data).map(([key, value]) => (
+              <div key={key} className="field-group">
+                <label>{key}:</label>
+                {key.toLowerCase().includes('image') ? (
+                  <>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileChange(section, key, e.target.files[0])}
+                    />
+                    {value && typeof value === 'string' && (
+                      <div style={{ marginTop: '8px' }}>
+                        <small>Current:</small><br />
+                        <img src={`http://localhost:5000/${value}`} alt={key} width="200" />
+                      </div>
+                    )}
+                  </>
+                ) : (
                   <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleFileChange(section, key, e.target.files[0])}
+                    type="text"
+                    value={updatedContent[section]?.[key] || ''}
+                    onChange={(e) => handleChange(section, key, e.target.value)}
                   />
-                  {value && typeof value === 'string' && (
-                    <div style={{ marginTop: '8px' }}>
-                      <small>Current:</small><br />
-                      <img src={`http://localhost:5000/${value}`} alt={key} width="200" />
-                    </div>
-                  )}
-                </>
-              ) : (
-                <input
-                  type="text"
-                  value={updatedContent[section]?.[key] || ''}
-                  onChange={(e) => handleChange(section, key, e.target.value)}
-                />
-              )}
-            </div>
-          ))}
+                )}
+              </div>
+            ))}
 
-          <button
-            className="update-button"
-            onClick={() => handleUpdateSection(section)}
-            disabled={updating[section]}
-          >
-            {updating[section] ? 'Updating...' : `Update ${section}`}
-          </button>
-        </div>
+            <button
+              className="update-button"
+              onClick={() => handleUpdateSection(section)}
+              disabled={updating[section]}
+            >
+              {updating[section] ? 'Updating...' : `Update ${section}`}
+            </button>
+          </div>
+        );
+      })}
+
+      <ListSection
+        title="What We Do"
+        items={whatWeDoList}
+        section="whatWeDo"
+        onAdd={addListItem}
+        onUpdate={updateListItem}
+        onDelete={deleteListItem}
+      />
+
+      <ListSection
+        title="Core Values"
+        items={coreValuesList}
+        section="coreValues"
+        onAdd={addListItem}
+        onUpdate={updateListItem}
+        onDelete={deleteListItem}
+      />
+    </div>
+  );
+}
+
+function ListSection({ title, items, section, onAdd, onUpdate, onDelete }) {
+  return (
+    <div className="home-section">
+      <h2>{title}</h2>
+      <button className="add-item-button" onClick={() => onAdd(section)}>
+        <FaPlus /> Add Item
+      </button>
+      {items.length === 0 && <p>No items yet.</p>}
+      {items.map(({ id, value }) => (
+        <ListItemEditor
+          key={id}
+          id={id}
+          section={section}
+          value={value}
+          onUpdate={onUpdate}
+          onDelete={onDelete}
+        />
       ))}
+    </div>
+  );
+}
+
+function ListItemEditor({ id, section, value, onUpdate, onDelete }) {
+  const [text, setText] = useState(value);
+  const [saving, setSaving] = useState(false);
+
+  const handleBlur = async () => {
+    if (text.trim() === '') {
+      alert('Value cannot be empty.');
+      setText(value);
+      return;
+    }
+    if (text !== value) {
+      setSaving(true);
+      await onUpdate(section, id, text);
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="list-item-editor">
+      <input
+        type="text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onBlur={handleBlur}
+        disabled={saving}
+      />
+      <button
+        className="delete-item-button"
+        onClick={() => onDelete(section, id)}
+        disabled={saving}
+        title="Delete item"
+      >
+        <FaTrash />
+      </button>
     </div>
   );
 }

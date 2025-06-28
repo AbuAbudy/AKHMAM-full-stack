@@ -1,24 +1,29 @@
+:root {
+  --light-bg: #ffffff;
+  --light-text: #1c1c1c;
+  --dark-bg: #121212;
+  --dark-text: #f5f5f5;
+}
+
+/* Global Styles */
 .home {
   font-family: 'Segoe UI', sans-serif;
-  color: #1c1c1c;
-  line-height: 1.6;
+  color: var(--light-text);
+  background-color: var(--light-bg);
+  transition: all 0.3s ease;
 }
 
 /* Hero Section */
 .hero {
-  color: #fff;
   text-align: center;
   padding: 140px 20px;
-  font-family: 'Segoe UI', 'Tahoma', sans-serif;
-}
-
-.hero {
   background-size: cover;
   background-position: center;
   position: relative;
   overflow: hidden;
-  transition: transform 0.3s ease;
+  color: #fff;
 }
+
 .hero h1 {
   font-size: 3.5rem;
   font-weight: 800;
@@ -56,15 +61,7 @@
   transform: scale(1.05);
 }
 
-/* Section Previews */
-.about-preview,
-.projects-preview,
-.help-options,
-.quran-quote {
-  padding: 60px 20px;
-  text-align: center;
-}
-
+/* Section Titles */
 .about-preview h2,
 .projects-preview h2,
 .help-options h2 {
@@ -72,6 +69,7 @@
   margin-bottom: 1.5rem;
   color: #004225;
   position: relative;
+  text-align: center;
 }
 
 .about-preview h2::after,
@@ -90,7 +88,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 4rem;
+  gap: 2rem;
   margin-top: 3rem;
 }
 
@@ -99,10 +97,13 @@
   border: 1px solid #e0e0e0;
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-  width: 600px;
-  height: 400px;
-  padding: 30px 20px;
+  width: 100%;
+  max-width: 500px;
+  min-width: 230px;
+  padding: 20px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  position: relative;
 }
 
 .preview-card:hover {
@@ -111,21 +112,39 @@
 }
 
 .preview-card h3 {
-  font-size: 2rem;
+  font-size: 1.6rem;
   margin-bottom: 1rem;
   color: #007e33;
-}
-
-.preview-card p {
-  font-size: 1.5rem;
-  color: black;
-  font-style: italic;
-  font-style: bold;
 }
 
 .preview-card img {
   width: 80px;
   margin-bottom: 1rem;
+}
+
+.preview-card .preview-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  max-height: 180px;
+  overflow: hidden;
+  position: relative;
+  font-style: italic;
+}
+
+/* Read More Button */
+.read-more {
+  margin-top: 12px;
+  background-color: transparent;
+  color: #007e33;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: 0.3s;
+}
+
+.read-more:hover {
+  color: #005e1f;
 }
 
 /* Quran Quote */
@@ -143,34 +162,26 @@
   line-height: 1.8;
 }
 
-/* Help Section */
+/* Help Options */
 .help-options {
   padding: 80px 20px;
   background: #f8fdf8;
-  text-align: center;
-}
-
-.section-title {
-  font-size: 2.5rem;
-  color: #004225;
-  margin-bottom: 3rem;
-  position: relative;
 }
 
 .card-wrapper {
   display: flex;
-  flex-direction: row;
-  gap: 80px;
-  justify-content: center;
   flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
 }
 
 .help-card {
   background-size: cover;
   background-position: center;
   border-radius: 30px;
-  width: 680px;          
-  height: 550px;            
+  width: 680px;
+  max-width: 95vw;
+  height: 550px;
   display: flex;
   align-items: flex-end;
   position: relative;
@@ -217,42 +228,144 @@
   background-color: #e6c200;
 }
 
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-  .card-wrapper {
-    flex-direction: column;
-    align-items: center;
+/* Responsive Styles */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .hero h1 {
+    font-size: 2.8rem;
   }
 
-  .help-card {
-    width: 100%;
-    max-width: 90vw;
-    height: 320px;
+  .hero p {
+    font-size: 1.4rem;
   }
 
   .card-content h3 {
-    font-size: 1.6rem;
+    font-size: 2.2rem;
   }
 
   .card-content p {
+    font-size: 1.4rem;
+  }
+
+  .card-content button {
     font-size: 1rem;
   }
 }
 
-
-/* Responsive */
+/* Phones */
 @media (max-width: 768px) {
-  .hero h1 {
-    font-size: 2.4rem;
-  }
-
-  .hero p {
-    font-size: 1.1rem;
-  }
-
   .preview-cards,
   .card-wrapper {
     flex-direction: column;
     align-items: center;
   }
+
+  .preview-card,
+  .help-card {
+    width: 95%;
+  }
+
+  .hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+  }
+}
+
+/* Smallest Phones */
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
+
+  .preview-card h3 {
+    font-size: 1.4rem;
+  }
+
+  .preview-card p,
+  .read-more {
+    font-size: 0.95rem;
+  }
+
+  .card-content {
+    padding: 30px;
+  }
+
+  .card-content h3 {
+    font-size: 1.8rem;
+  }
+
+  .card-content p {
+    font-size: 1.2rem;
+  }
+}
+
+/* List item editor */
+.list-item-editor {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.list-item-editor input[type="text"] {
+  flex-grow: 1;
+  padding: 8px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  margin-right: 10px;
+  transition: border-color 0.3s ease;
+}
+
+body.dark-mode .list-item-editor input[type="text"] {
+  background-color: #333;
+  color: #eee;
+  border-color: var(--border-dark);
+}
+
+.delete-item-button {
+  background-color: #e74c3c;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.delete-item-button:hover {
+  background-color: #c0392b;
+}
+
+.add-item-button {
+  background-color: var(--btn-light);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.add-item-button:hover {
+  background-color: var(--btn-hover-light);
+}
+
+body.dark-mode .add-item-button {
+  background-color: var(--btn-dark);
+}
+
+body.dark-mode .add-item-button:hover {
+  background-color: var(--btn-hover-dark);
 }

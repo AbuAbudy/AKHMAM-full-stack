@@ -4,28 +4,71 @@
   line-height: 1.8;
 }
 
-.about-hero {
-  background-size: cover;
+/* HERO SECTION - Responsive & Elegant */
+.hero-section {
+  position: relative;
+  width: 100%;
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
   background-position: center;
-  padding: 100px 20px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   text-align: center;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.6) 50%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  z-index: 1;
+}
+
+.hero-section h1,
+.hero-section h2,
+.hero-section p {
+  position: relative;
+  z-index: 2;
   color: white;
-  background-color: rgba(0, 0, 0, 0.3);
-  background-blend-mode: darken;
 }
 
-.hero-content h1 {
-  font-size: 50px;
-  margin-bottom: 10px;
-  font-weight: bold;
-  color: #fff;
+.hero-section h1 {
+  font-size: 7rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+  color: gold;
 }
 
-.hero-content p {
-  font-size: 20px;
-  margin: 5px 0;
+
+.hero-section h2 {
+  font-size: 4rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+  font-style: italic;
   font-family: 'Amiri', serif;
 }
+
+.hero-section p {
+  font-size: 2rem;
+  font-family: 'Amiri', serif;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* --- Remaining sections (unchanged) --- */
 
 .mission-vision {
   display: flex;

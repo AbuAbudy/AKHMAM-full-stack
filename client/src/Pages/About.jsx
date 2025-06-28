@@ -24,27 +24,43 @@ function About() {
     callToAction = {}
   } = content;
 
-  // Convert whatWeDo and coreValues to arrays
+  // Convert whatWeDo and coreValues to arrays of values
   const whatWeDoItems = Object.values(whatWeDo);
   const coreValuesList = Object.values(coreValues);
 
   return (
     <div className="about-page">
+
       {/* Hero Section */}
-      <section
-        className="about-hero"
-        style={{
-          backgroundImage: hero.background_image
-            ? `url(http://localhost:5000/${hero.background_image})`
-            : '',
-        }}
-      >
-        <div className="hero-content">
-          <h1>{hero.title}</h1>
-          <p>{hero.subtitle_ar}</p>
-          <p>{hero.subtitle_en}</p>
-        </div>
-      </section>
+     {hero && hero.background_image && (
+  <div
+    className="hero-section"
+    style={{
+      backgroundImage: `url(http://localhost:5000/${hero.background_image.replace('assets/', '')})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      padding: '100px 20px',
+      color: '#fff',
+    }}
+  >
+    <div>
+      {hero.subtitle_ar && (
+        <h1 dir="rtl" >
+          {hero.subtitle_ar}
+        </h1>
+      )}
+
+
+      <h2>{hero.title}</h2>
+
+      {hero.subtitle_en && (
+        <p >{hero.subtitle_en}</p>
+      )}
+    </div>
+  </div>
+)}
+
+
 
       {/* Mission & Vision */}
       <section className="mission-vision">

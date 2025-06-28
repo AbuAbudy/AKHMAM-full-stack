@@ -28,6 +28,9 @@ app.use(express.json());
 app.use('/assets/uploads', express.static(path.join(__dirname, 'public/assets/uploads')));
 app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use(express.static('public'));
+
+
 
 // ✅ Routes
 app.use('/api', userRoutes);
