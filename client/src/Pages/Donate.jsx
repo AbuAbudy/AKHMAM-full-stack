@@ -5,87 +5,199 @@ import '../styles/Donate.css';
 function Donate() {
   const [donateData, setDonateData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [formData, setFormData] = useState({
+    name: '',
+    amount: '',
+    reason: '',
+    email: '',
+    screenshot: null,
+  });
+  const [status, setStatus] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     axios.get('http://localhost:5000/api/donate')
-      .then((res) => {
+      .then(res => {
         setDonateData(res.data);
         setLoading(false);
       })
-      .catch((err) => {
-        console.error('Error fetching donate content:', err);
+      .catch(err => {
+        console.error(err);
         setLoading(false);
       });
   }, []);
 
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'screenshot' ? files[0] : value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setStatus(null);
+
+    if (!formData.name || !formData.amount || !formData.reason) {
+      setStatus({ type: 'error', message: 'Please fill all required fields.' });
+      setSubmitting(false);
+      return;
+    }
+
+    const postData = new FormData();
+    Object.entries(formData).forEach(([key, val]) => {
+      if (val) postData.append(key, val);
+    });
+
+    try {
+      const res = await axios.post('http://localhost:5000/api/donate/submit-proof', postData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setStatus({ type: 'success', message: res.data.message });
+      setFormData({ name: '', amount: '', reason: '', email: '', screenshot: null });
+    } catch (err) {
+      setStatus({ type: 'error', message: err.response?.data?.error || 'Submission failed.' });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (loading) return <p>Loading...</p>;
   if (!donateData) return <p>Failed to load content.</p>;
 
-  const { hero = {}, bankInfo = {}, cta = {} } = donateData;
+  const { hero = {}, bankInfo = {}, cta = {}, donationProof = {} } = donateData;
+
+  const parsedBanks = Object.entries(bankInfo).reduce((acc, [key, value]) => {
+    const match = key.match(/^bank_(\d+)_(name|account_name|account_number|logo)$/);
+    if (match) {
+      const [_, id, field] = match;
+      if (!acc[id]) acc[id] = {};
+      acc[id][field] = value;
+    }
+    return acc;
+  }, {});
 
   return (
     <div className="donate-page">
       {/* Hero Section */}
-<section
-  className="donate-hero"
-  style={{
-    backgroundImage: `url(http://localhost:5000${hero.background_image}?v=${Date.now()})`
-  }}
->
-  <h1>{hero.title}</h1>
-  <p>{hero.subtitle}</p>
-</section>
+      <section
+        className="donate-hero"
+        style={{
+          backgroundImage: `url(http://localhost:5000${hero.background_image}?v=${Date.now()})`
+        }}
+      >
+        <h1>{hero.title}</h1>
+        <p>{hero.subtitle}</p>
+      </section>
 
-
-      {/* Bank Info Section */}
+      {/* Bank Info */}
       <section className="bank-info">
         <h2>Donate via Bank Transfer</h2>
         <ul>
-          {[1, 2, 3].map((i) => {
-            const logoPath = bankInfo[`bank_${i}_logo`]
-              ? `http://localhost:5000${bankInfo[`bank_${i}_logo`]}`
-              : '';
-            return (
-              <li key={i}>
+          {Object.entries(parsedBanks).map(([id, bank]) => (
+            <li key={id}>
+              {bank.logo && (
                 <img
-  src={`http://localhost:5000${bankInfo[`bank_${i}_logo`]}?v=${Date.now()}`}
-  alt={bankInfo[`bank_${i}_name`]}
-  key={i}
-/>
-
-                <div>
-                  <h3>{bankInfo[`bank_${i}_name`]}</h3>
-                  <p>Account Name: {bankInfo[`bank_${i}_account_name`]}</p>
-                  <p>Account Number: {bankInfo[`bank_${i}_account_number`]}</p>
-                </div>
-              </li>
-            );
-          })}
+                  src={`http://localhost:5000${bank.logo}?v=${Date.now()}`}
+                  alt={bank.name}
+                  width={60}
+                />
+              )}
+              <div>
+                <h3>{bank.name}</h3>
+                <p>Account Name: {bank.account_name}</p>
+                <p>Account Number: {bank.account_number}</p>
+              </div>
+            </li>
+          ))}
         </ul>
       </section>
 
-      {/* Static Donation Form */}
+      {/* Donation Form */}
       <section className="donation-form-section">
         <h2>Donation Details</h2>
-        <form className="donation-form" onSubmit={(e) => e.preventDefault()}>
+        {donationProof.instructions && (
+          <p style={{ fontStyle: 'italic', marginBottom: '15px' }}>{donationProof.instructions}</p>
+        )}
+
+        <form className="donation-form" onSubmit={handleSubmit} encType="multipart/form-data">
           <div className="form-group">
             <label>Name <span>*</span></label>
-            <input type="text" name="name" required />
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              disabled={submitting}
+            />
           </div>
+
           <div className="form-group">
             <label>Amount Donated (ETB) <span>*</span></label>
-            <input type="number" name="amount" required />
+            <input
+              type="number"
+              name="amount"
+              value={formData.amount}
+              onChange={handleChange}
+              required
+              min="1"
+              disabled={submitting}
+            />
           </div>
+
           <div className="form-group">
-            <label>Reason / Purpose of Donation <span>*</span></label>
-            <textarea name="reason" required />
+            <label>Reason / Purpose <span>*</span></label>
+            <textarea
+              name="reason"
+              value={formData.reason}
+              onChange={handleChange}
+              required
+              rows={3}
+              disabled={submitting}
+            />
           </div>
+
           <div className="form-group">
             <label>Email (optional)</label>
-            <input type="email" name="email" />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              disabled={submitting}
+            />
           </div>
-          <button type="submit">Submit</button>
+
+          <div className="form-group">
+            <label>Upload Screenshot (optional)</label>
+            <input
+              type="file"
+              name="screenshot"
+              accept="image/*"
+              onChange={handleChange}
+              disabled={submitting}
+            />
+          </div>
+
+          <button type="submit" disabled={submitting}>
+            {submitting ? 'Submitting...' : 'Submit'}
+          </button>
         </form>
+
+        {status && (
+          <p
+            style={{
+              marginTop: '15px',
+              color: status.type === 'success' ? 'green' : 'red',
+              fontWeight: 'bold'
+            }}
+          >
+            {status.message}
+          </p>
+        )}
       </section>
 
       {/* CTA Section */}

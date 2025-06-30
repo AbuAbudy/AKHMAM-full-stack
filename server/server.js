@@ -15,8 +15,6 @@ const blogRoutes = require('./routes/blogRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const authRoutes = require('./routes/authRoutes');
 
-
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -24,15 +22,11 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// ✅ Serve static files (for images in /public/assets)
-app.use('/assets/uploads', express.static(path.join(__dirname, 'public/assets/uploads')));
+// ✅ Serve all static files under public/assets
 app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use(express.static('public'));
 
-
-
-// ✅ Routes
+// ✅ API Routes
 app.use('/api', userRoutes);
 app.use('/api', homeRoutes);
 app.use('/api', aboutRoutes);
@@ -41,13 +35,12 @@ app.use('/api/volunteers', volunteerRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/contact', contactRoutes);
-app.use('/api/auth', authRoutes);  // Added auth routes
+app.use('/api/auth', authRoutes);
 
 // ✅ Test DB connection & start server
 sequelize.authenticate()
   .then(() => {
     console.log('✅ Connected to the database successfully.');
-
     app.listen(PORT, () => {
       console.log(`🚀 Server is running at http://localhost:${PORT}`);
     });
