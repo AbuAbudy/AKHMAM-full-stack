@@ -11,6 +11,13 @@ import "../styles/Volunteer.css";
 
 function Volunteer() {
   const [content, setContent] = useState(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    interest: "",
+    message: "",
+  });
 
   useEffect(() => {
     axios
@@ -19,11 +26,31 @@ function Volunteer() {
       .catch((err) => console.error("Error fetching volunteer content", err));
   }, []);
 
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post("http://localhost:5000/api/volunteers/apply", formData);
+      alert(res.data.message || "Submitted successfully!");
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        interest: "",
+        message: "",
+      });
+    } catch (err) {
+      console.error("Submission error", err);
+      alert("Submission failed.");
+    }
+  };
+
   if (!content) return <p>Loading...</p>;
 
   return (
     <div className="volunteer-page">
-      {/* Hero Section */}
       {content.hero && (
         <section
           className="volunteer-hero"
@@ -40,7 +67,6 @@ function Volunteer() {
         </section>
       )}
 
-      {/* Stats Section */}
       {content.stats && (
         <section className="volunteer-stats">
           <div className="stat">
@@ -61,7 +87,6 @@ function Volunteer() {
         </section>
       )}
 
-      {/* Highlights Section */}
       {content.highlights && (
         <section className="volunteer-highlights">
           <div className="highlight">
@@ -82,7 +107,6 @@ function Volunteer() {
         </section>
       )}
 
-      {/* Story Section */}
       {content.story && (
         <section className="volunteer-story">
           <h2>{content.story.title}</h2>
@@ -95,36 +119,22 @@ function Volunteer() {
       <section className="volunteer-form-section">
         <h2>Apply to Volunteer</h2>
 
-        <form
-          className="volunteer-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            alert("Submitted! (Connect this to backend later)");
-          }}
-        >
+        <form className="volunteer-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>
-              Full Name<span>*</span>
-            </label>
-            <input type="text" name="name" required />
+            <label>Full Name<span>*</span></label>
+            <input type="text" name="name" required value={formData.name} onChange={handleChange} />
           </div>
           <div className="form-group">
-            <label>
-              Email<span>*</span>
-            </label>
-            <input type="email" name="email" required />
+            <label>Email<span>*</span></label>
+            <input type="email" name="email" required value={formData.email} onChange={handleChange} />
           </div>
           <div className="form-group">
-            <label>
-              Phone Number<span>*</span>
-            </label>
-            <input type="tel" name="phone" required />
+            <label>Phone Number<span>*</span></label>
+            <input type="tel" name="phone" required value={formData.phone} onChange={handleChange} />
           </div>
           <div className="form-group">
-            <label>
-              Area of Interest / Skill<span>*</span>
-            </label>
-            <select name="interest" required>
+            <label>Area of Interest / Skill<span>*</span></label>
+            <select name="interest" required value={formData.interest} onChange={handleChange}>
               <option value="">-- Select an area --</option>
               <option value="Teaching">Teaching Islamic Studies</option>
               <option value="Medical">Medical Support</option>
@@ -136,7 +146,7 @@ function Volunteer() {
           </div>
           <div className="form-group">
             <label>Why do you want to volunteer?</label>
-            <textarea name="message" rows="4" />
+            <textarea name="message" rows="4" value={formData.message} onChange={handleChange} />
           </div>
           <button type="submit">Submit</button>
         </form>

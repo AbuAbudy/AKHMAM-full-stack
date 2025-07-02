@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../../styles/AdminHome.css";
-import { FaSun, FaMoon } from "react-icons/fa";
+import { FaSun, FaMoon, FaTrash } from "react-icons/fa";
 
 function AdminVolunteer() {
   const [volunteerContent, setVolunteerContent] = useState({});
+  const [applications, setApplications] = useState([]);
   const [updatedContent, setUpdatedContent] = useState({});
   const [updating, setUpdating] = useState({});
   const [loading, setLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
+  const [loadingApps, setLoadingApps] = useState(true);
+  const [deletingKey, setDeletingKey] = useState(null);
 
   useEffect(() => {
     fetchContent();
+    fetchApplications();
 
     const mode = localStorage.getItem("mode") || "light";
     setDarkMode(mode === "dark");
@@ -26,6 +30,18 @@ function AdminVolunteer() {
       setLoading(false);
     } catch (err) {
       console.error("Error fetching volunteer content:", err);
+    }
+  };
+
+  const fetchApplications = async () => {
+    try {
+      setLoadingApps(true);
+      const res = await axios.get("http://localhost:5000/api/volunteers/applications");
+      setApplications(res.data);
+    } catch (err) {
+      console.error("Error fetching applications:", err);
+    } finally {
+      setLoadingApps(false);
     }
   };
 
@@ -78,16 +94,32 @@ function AdminVolunteer() {
       });
 
       alert(res.data.message || "Section updated!");
-
-      // Refetch fresh content
-      const refreshed = await axios.get("http://localhost:5000/api/volunteers");
-      setVolunteerContent(refreshed.data);
-      setUpdatedContent(refreshed.data);
+      await fetchContent();
     } catch (error) {
       console.error(error);
       alert("Update failed: " + (error.response?.data?.error || error.message));
     } finally {
       setUpdating((prev) => ({ ...prev, [section]: false }));
+    }
+  };
+
+  const handleDeleteApplication = async (key) => {
+    if (!window.confirm("Are you sure you want to delete this application?")) return;
+
+    setDeletingKey(key);
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:5000/api/volunteers/applications/${key}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert("Application deleted successfully.");
+      await fetchApplications();
+    } catch (error) {
+      console.error("Delete failed:", error);
+      alert("Failed to delete application.");
+    } finally {
+      setDeletingKey(null);
     }
   };
 
@@ -146,6 +178,69 @@ function AdminVolunteer() {
           </button>
         </div>
       ))}
+
+      <div className="home-section" style={{ marginTop: "2rem" }}>
+        <h2>Volunteer Applications</h2>
+
+        {loadingApps ? (
+          <p>Loading applications...</p>
+        ) : applications.length === 0 ? (
+          <p>No applications submitted yet.</p>
+        ) : (
+          applications.map((app) => {
+            const submittedDate = new Date(app.timestamp);
+            const formattedDate = submittedDate.toLocaleString("en-GB", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+            });
+
+            return (
+              <div
+                key={app.key}
+                style={{
+                  border: darkMode ? "1px solid #ddd" : "1px solid #333",
+                  padding: "12px",
+                  marginBottom: "1rem",
+                  borderRadius: "8px",
+                  backgroundColor: darkMode ? "#222" : "#fafafa",
+                  color: darkMode ? "#eee" : "#111",
+                  whiteSpace: "pre-wrap",
+                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                  wordBreak: "break-word",
+                  overflowWrap: "break-word",
+                }}
+              >
+                <p><strong>Name:</strong> {app.name}</p>
+                <p><strong>Email:</strong> {app.email}</p>
+                <p><strong>Phone:</strong> {app.phone}</p>
+                <p><strong>Interest:</strong> {app.interest}</p>
+                <p style={{ wordBreak: "break-word", overflowWrap: "break-word", whiteSpace: "pre-wrap" }}>
+                  <strong>Message:</strong> {app.message || "(No message)"}
+                </p>
+                <p><strong>Submitted:</strong> {formattedDate}</p>
+                <button
+                  onClick={() => handleDeleteApplication(app.key)}
+                  disabled={deletingKey === app.key}
+                  style={{
+                    backgroundColor: "#c0392b",
+                    color: "white",
+                    border: "none",
+                    padding: "6px 12px",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  {deletingKey === app.key ? "Deleting..." : <><FaTrash /> Delete</>}
+                </button>
+              </div>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 }

@@ -3,10 +3,12 @@ const router = express.Router();
 const upload = require("../middleware/uploadMiddleware");
 const volunteerController = require("../controllers/volunteerController");
 
-// GET all volunteer content
 router.get("/", volunteerController.getVolunteerPageContent);
-
-// PUT update volunteer content (with file upload)
 router.put("/", upload.any(), volunteerController.updateVolunteerContent);
+
+// Application routes
+router.post("/apply", volunteerController.submitVolunteerApplication);
+router.get("/applications", volunteerController.getVolunteerApplications);
+router.delete("/applications/:key", volunteerController.deleteVolunteerApplication);
 
 module.exports = router;

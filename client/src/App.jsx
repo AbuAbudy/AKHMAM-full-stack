@@ -5,7 +5,7 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import About from './pages/About';
 import Donate from './pages/Donate';
-import Volunteer from './pages/Volunteer';
+import Volunteer from './Pages/Volunteer';
 import Projects from './pages/Projects';
 import Blog from './pages/Blog';
 import Contact from './pages/Contact';
