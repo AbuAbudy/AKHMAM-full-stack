@@ -78,7 +78,10 @@ body.dark-mode .home-section {
 }
 
 .field-group input[type="text"],
-.field-group input[type="file"] {
+.field-group input[type="file"],
+.field-group input[type="number"],
+.field-group select,
+.field-group textarea {
   padding: 10px;
   border: 1px solid var(--border-light);
   border-radius: 6px;
@@ -88,7 +91,10 @@ body.dark-mode .home-section {
 }
 
 body.dark-mode .field-group input[type="text"],
-body.dark-mode .field-group input[type="file"] {
+body.dark-mode .field-group input[type="file"],
+body.dark-mode .field-group input[type="number"],
+body.dark-mode .field-group select,
+body.dark-mode .field-group textarea {
   background-color: #333;
   color: #eee;
   border-color: var(--border-dark);
@@ -104,6 +110,7 @@ body.dark-mode .field-group input[type="file"] {
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  margin-right: 10px;
 }
 
 .update-button:hover {
@@ -139,4 +146,3 @@ body.light-mode .night-toggle {
 .night-toggle:hover {
   transform: scale(1.15);
 }
-/* Application Card Styling */

@@ -1,4 +1,3 @@
-// server/controllers/projectController.js
 const path = require("path");
 const ProjectContent = require("../models/ProjectContent");
 
@@ -14,48 +13,54 @@ const getProjectContent = async (req, res) => {
 
     res.json(result);
   } catch (err) {
-    console.error("Failed to load project content", err);
+    console.error("Error loading project content:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
 const updateProjectContent = async (req, res) => {
-  const { section, ...textFields } = req.body;
+  // Use req.body.section and all other keys
+  const { section, ...rest } = req.body;
 
   if (!section) {
     return res.status(400).json({ error: "Section is required" });
   }
 
-  const updates = { ...textFields };
-
-  if (req.files && req.files.length > 0) {
+  // For images, multer puts them in req.files as array
+  // Map files by fieldname to file path
+  const fileMap = {};
+  if (req.files && req.files.length) {
     req.files.forEach((file) => {
-      const relativePath = path.posix.join("uploads", file.filename);
-updates[file.fieldname] = relativePath;
-
-
-
+      const relativePath = path.posix.join("assets", "uploads", file.filename);
+      fileMap[file.fieldname] = relativePath;
     });
   }
 
   try {
+    // Combine text fields and uploaded files
+    const updates = { ...rest, ...fileMap };
+
+    // Iterate keys and update/create in DB
     await Promise.all(
       Object.entries(updates).map(async ([key, value]) => {
+        // Ignore undefined or null values to avoid overwriting
+        if (value === undefined || value === null) return;
+
         const [record, created] = await ProjectContent.findOrCreate({
           where: { section, key },
-          defaults: { value },
+          defaults: { value: value.toString() },
         });
 
         if (!created) {
-          record.value = value;
+          record.value = value.toString();
           await record.save();
         }
       })
     );
 
-    res.json({ message: `Project section "${section}" updated successfully.` });
+    res.json({ message: `Section "${section}" updated successfully.` });
   } catch (err) {
-    console.error("Failed to update project content", err);
+    console.error("Error updating project content:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
