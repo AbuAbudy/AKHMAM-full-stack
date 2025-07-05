@@ -7,9 +7,10 @@ function Blog() {
   const [posts, setPosts] = useState([]);
   const [commentInputs, setCommentInputs] = useState({});
   const currentUser = 'user_123'; // Simulated user
+  const baseURL = 'http://localhost:5000'; // your backend
 
   useEffect(() => {
-    axios.get('/api/blog')
+    axios.get(`${baseURL}/api/blog`)
       .then(res => setPosts(res.data))
       .catch(err => console.error('Error fetching blog posts:', err));
   }, []);
@@ -23,7 +24,7 @@ function Blog() {
             ? post.likes.filter(u => u !== currentUser)
             : [...(post.likes || []), currentUser];
 
-          axios.put(`/api/blog/${id}`, { ...post, likes: updatedLikes });
+          axios.put(`${baseURL}/api/blog/${id}`, { ...post, likes: updatedLikes });
           return { ...post, likes: updatedLikes };
         }
         return post;
@@ -44,7 +45,7 @@ function Blog() {
       prev.map(post => {
         if (post.id === id) {
           const updatedComments = [...(post.comments || []), newComment];
-          axios.put(`/api/blog/${id}`, { ...post, comments: updatedComments });
+          axios.put(`${baseURL}/api/blog/${id}`, { ...post, comments: updatedComments });
           return { ...post, comments: updatedComments };
         }
         return post;
@@ -59,7 +60,17 @@ function Blog() {
       <h1 className="blog-title">AKHMAM Blog</h1>
       {posts.map(post => (
         <div key={post.id} className="blog-post">
-          <img src={`http://localhost:5000/${post.image}`} alt={post.title} className="post-image" />
+          {post.image && (
+            <img
+              src={`${baseURL}/${post.image}`}
+              alt={post.title}
+              className="post-image"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = `${baseURL}/assets/uploads/default.jpg`; // fallback
+              }}
+            />
+          )}
           <div className="post-content">
             <h2>{post.title}</h2>
             <p>{post.description}</p>

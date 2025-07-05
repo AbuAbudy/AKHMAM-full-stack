@@ -1,4 +1,3 @@
-// FINAL AdminBlog.jsx - With All Enhancements
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -60,7 +59,9 @@ function AdminBlog() {
       title: post.title,
       description: post.description,
       image: null,
-      preview: post.image ? `/${post.image}` : "",
+      preview: post.image
+        ? `http://localhost:5000/${post.image}`
+        : "",
     });
   };
 
@@ -157,16 +158,25 @@ function AdminBlog() {
             <div key={post.id} className="admin-item">
               {post.image && (
                 <img
-                  src={`/${post.image}`}
+                  src={`http://localhost:5000/${post.image}`}
                   alt={post.title}
                   className="post-image"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "http://localhost:5000/assets/uploads/default.jpg";
+                  }}
                 />
               )}
               <h3>{post.title}</h3>
               <p>{post.description}</p>
               <div className="admin-buttons">
-                <button onClick={() => handleEdit(post)}><FaEdit /> Edit</button>
-                <button onClick={() => handleDelete(post.id)} className="delete">
+                <button onClick={() => handleEdit(post)}>
+                  <FaEdit /> Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(post.id)}
+                  className="delete"
+                >
                   <FaTrash /> Delete
                 </button>
               </div>

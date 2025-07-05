@@ -1,5 +1,5 @@
 const path = require('path');
-const BlogContent = require('../models/blogContent');
+const BlogContent = require('../models/BlogContent');
 
 // GET all blog posts
 const getAllPosts = async (req, res) => {
@@ -19,6 +19,7 @@ const createPost = async (req, res) => {
     let imagePath = '';
 
     if (req.file) {
+      // Store relative path including assets/uploads for correct static serving
       imagePath = path.posix.join('uploads', req.file.filename);
     }
 
@@ -45,7 +46,9 @@ const updatePost = async (req, res) => {
     if (!post) return res.status(404).json({ error: 'Post not found' });
 
     const { title, description } = req.body;
+
     if (req.file) {
+      // Update image path with correct prefix
       post.image = path.posix.join('uploads', req.file.filename);
     }
 
