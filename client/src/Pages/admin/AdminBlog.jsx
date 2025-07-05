@@ -31,7 +31,7 @@ function AdminBlog() {
     setLoading(true);
     try {
       const res = await axios.get("/api/blog");
-      setPosts(res.data);
+setPosts(res.data.posts || []);
     } catch (err) {
       toast.error("Failed to load blog posts");
     } finally {

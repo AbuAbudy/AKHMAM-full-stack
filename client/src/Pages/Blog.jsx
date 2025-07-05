@@ -6,12 +6,30 @@ import { FaHeart, FaRegHeart, FaComment, FaShareAlt, FaFacebook, FaTwitter, FaWh
 function Blog() {
   const [posts, setPosts] = useState([]);
   const [commentInputs, setCommentInputs] = useState({});
+  const [pagination, setPagination] = useState({
+    totalPosts: 0,
+    totalPages: 0,
+    currentPage: 1,
+    pageSize: 8,
+  });
+  const [loading, setLoading] = useState(false);
   const currentUser = 'user_123'; // Simulated user
 
+  const fetchPosts = async (page = 1) => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`/api/blog?page=${page}`);
+      setPosts(res.data.posts);
+      setPagination(res.data.pagination);
+    } catch (err) {
+      console.error('Error fetching blog posts:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    axios.get('/api/blog')
-      .then(res => setPosts(res.data))
-      .catch(err => console.error('Error fetching blog posts:', err));
+    fetchPosts(1);
   }, []);
 
   const handleLikeToggle = (id) => {
@@ -82,62 +100,92 @@ function Blog() {
     window.open(shareUrl, '_blank');
   };
 
+  const handlePageClick = (pageNum) => {
+    if (pageNum !== pagination.currentPage) {
+      fetchPosts(pageNum);
+      window.scrollTo({ top: 0, behavior: 'smooth' }); // scroll to top on page change
+    }
+  };
+
   return (
     <div className="blog-container">
       <h1 className="blog-title">AKHMAM Blog</h1>
-      {posts.map(post => (
-        <div key={post.id} className="blog-post" id={`post-${post.id}`}>
-          <img src={`http://localhost:5000/${post.image}`} alt={post.title} className="post-image" />
-          <div className="post-content">
-            <h2>{post.title}</h2>
-            <p>{post.description}</p>
+      {loading ? (
+        <p>Loading posts...</p>
+      ) : posts.length === 0 ? (
+        <p>No blog posts found.</p>
+      ) : (
+        posts.map(post => (
+          <div key={post.id} className="blog-post" id={`post-${post.id}`}>
+            <img src={`http://localhost:5000/${post.image}`} alt={post.title} className="post-image" />
+            <div className="post-content">
+              <h2>{post.title}</h2>
+              <p>{post.description}</p>
 
-            <div className="post-actions">
-              <button
-                className={`like-button ${post.likes?.includes(currentUser) ? 'liked' : ''}`}
-                onClick={() => handleLikeToggle(post.id)}
-              >
-                {post.likes?.includes(currentUser) ? <FaHeart /> : <FaRegHeart />}
-              </button>
-              <span>{post.likes?.length || 0} Likes</span>
-              <span className="comment-count">
-                <FaComment /> {post.comments?.length || 0} Comments
-              </span>
-            </div>
+              <div className="post-actions">
+                <button
+                  className={`like-button ${post.likes?.includes(currentUser) ? 'liked' : ''}`}
+                  onClick={() => handleLikeToggle(post.id)}
+                >
+                  {post.likes?.includes(currentUser) ? <FaHeart /> : <FaRegHeart />}
+                </button>
+                <span>{post.likes?.length || 0} Likes</span>
+                <span className="comment-count">
+                  <FaComment /> {post.comments?.length || 0} Comments
+                </span>
+              </div>
 
-            {/* ✅ Share Section */}
-            <div className="share-section">
-              <FaShareAlt style={{ marginRight: '8px' }} />
-              <span>Share:</span>
-              <button onClick={() => handleShare('facebook', post)} title="Share on Facebook"><FaFacebook /></button>
-              <button onClick={() => handleShare('twitter', post)} title="Share on Twitter"><FaTwitter /></button>
-              <button onClick={() => handleShare('whatsapp', post)} title="Share on WhatsApp"><FaWhatsapp /></button>
-              <button onClick={() => handleShare('telegram', post)} title="Share on Telegram"><FaTelegram /></button>
-              <button onClick={() => handleShare('copy', post)} title="Copy Link"><FaCopy /></button>
-            </div>
+              <div className="share-section">
+                <FaShareAlt style={{ marginRight: '8px' }} />
+                <span>Share:</span>
+                <button onClick={() => handleShare('facebook', post)} title="Share on Facebook"><FaFacebook /></button>
+                <button onClick={() => handleShare('twitter', post)} title="Share on Twitter"><FaTwitter /></button>
+                <button onClick={() => handleShare('whatsapp', post)} title="Share on WhatsApp"><FaWhatsapp /></button>
+                <button onClick={() => handleShare('telegram', post)} title="Share on Telegram"><FaTelegram /></button>
+                <button onClick={() => handleShare('copy', post)} title="Copy Link"><FaCopy /></button>
+              </div>
 
-            <form onSubmit={(e) => handleCommentSubmit(e, post.id)} className="comment-form">
-              <textarea
-                rows="2"
-                placeholder="Write a comment..."
-                value={commentInputs[post.id] || ''}
-                onChange={(e) => handleCommentChange(e, post.id)}
-                required
-              ></textarea>
-              <button type="submit">Post</button>
-            </form>
+              <form onSubmit={(e) => handleCommentSubmit(e, post.id)} className="comment-form">
+                <textarea
+                  rows="2"
+                  placeholder="Write a comment..."
+                  value={commentInputs[post.id] || ''}
+                  onChange={(e) => handleCommentChange(e, post.id)}
+                  required
+                ></textarea>
+                <button type="submit">Post</button>
+              </form>
 
-            <div className="comment-list">
-              {post.comments?.map((comment, index) => (
-                <div key={index} className="comment">
-                  <strong>{comment.name}</strong>
-                  <p>{comment.text}</p>
-                </div>
-              ))}
+              <div className="comment-list">
+                {post.comments?.map((comment, index) => (
+                  <div key={index} className="comment">
+                    <strong>{comment.name}</strong>
+                    <p>{comment.text}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))
+      )}
+
+      {/* Pagination */}
+      {pagination.totalPages > 1 && (
+        <nav className="pagination">
+          {[...Array(pagination.totalPages)].map((_, idx) => {
+            const pageNum = idx + 1;
+            return (
+              <button
+                key={pageNum}
+                className={pageNum === pagination.currentPage ? 'active' : ''}
+                onClick={() => handlePageClick(pageNum)}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
+        </nav>
+      )}
     </div>
   );
 }

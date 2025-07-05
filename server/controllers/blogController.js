@@ -1,11 +1,31 @@
 const path = require('path');
 const BlogContent = require('../models/BlogContent');
 
-// GET all blog posts
+// GET all blog posts with pagination
 const getAllPosts = async (req, res) => {
   try {
-    const posts = await BlogContent.findAll({ order: [['id', 'DESC']] });
-    res.json(posts);
+    let page = parseInt(req.query.page) || 1;
+    let limit = 8; // fixed page size as you requested
+    if (page < 1) page = 1;
+    const offset = (page - 1) * limit;
+
+    const totalPosts = await BlogContent.count();
+
+    const posts = await BlogContent.findAll({
+      order: [['id', 'DESC']],
+      limit,
+      offset,
+    });
+
+    res.json({
+      posts,
+      pagination: {
+        totalPosts,
+        totalPages: Math.ceil(totalPosts / limit),
+        currentPage: page,
+        pageSize: limit,
+      },
+    });
   } catch (error) {
     console.error('Error fetching blog posts:', error);
     res.status(500).json({ error: 'Server error fetching blog posts' });
@@ -19,7 +39,6 @@ const createPost = async (req, res) => {
     let imagePath = '';
 
     if (req.file) {
-      // Store relative path including assets/uploads for correct static serving
       imagePath = path.posix.join('uploads', req.file.filename);
     }
 
@@ -48,7 +67,6 @@ const updatePost = async (req, res) => {
     const { title, description } = req.body;
 
     if (req.file) {
-      // Update image path with correct prefix
       post.image = path.posix.join('uploads', req.file.filename);
     }
 
