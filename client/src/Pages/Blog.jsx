@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../styles/Blog.css';
-import { FaHeart, FaRegHeart, FaComment } from 'react-icons/fa';
+import { FaHeart, FaRegHeart, FaComment, FaShareAlt, FaFacebook, FaTwitter, FaWhatsapp, FaTelegram, FaCopy } from 'react-icons/fa';
 
 function Blog() {
   const [posts, setPosts] = useState([]);
   const [commentInputs, setCommentInputs] = useState({});
   const currentUser = 'user_123'; // Simulated user
-  const baseURL = 'http://localhost:5000'; // your backend
 
   useEffect(() => {
-    axios.get(`${baseURL}/api/blog`)
+    axios.get('/api/blog')
       .then(res => setPosts(res.data))
       .catch(err => console.error('Error fetching blog posts:', err));
   }, []);
@@ -24,7 +23,7 @@ function Blog() {
             ? post.likes.filter(u => u !== currentUser)
             : [...(post.likes || []), currentUser];
 
-          axios.put(`${baseURL}/api/blog/${id}`, { ...post, likes: updatedLikes });
+          axios.put(`/api/blog/${id}`, { ...post, likes: updatedLikes });
           return { ...post, likes: updatedLikes };
         }
         return post;
@@ -45,7 +44,7 @@ function Blog() {
       prev.map(post => {
         if (post.id === id) {
           const updatedComments = [...(post.comments || []), newComment];
-          axios.put(`${baseURL}/api/blog/${id}`, { ...post, comments: updatedComments });
+          axios.put(`/api/blog/${id}`, { ...post, comments: updatedComments });
           return { ...post, comments: updatedComments };
         }
         return post;
@@ -55,22 +54,40 @@ function Blog() {
     setCommentInputs({ ...commentInputs, [id]: '' });
   };
 
+  const handleShare = (platform, post) => {
+    const blogUrl = `${window.location.origin}/blog#post-${post.id}`;
+    let shareUrl = '';
+
+    switch (platform) {
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(blogUrl)}`;
+        break;
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(blogUrl)}&text=${encodeURIComponent(post.title)}`;
+        break;
+      case 'whatsapp':
+        shareUrl = `https://wa.me/?text=${encodeURIComponent(post.title + ' ' + blogUrl)}`;
+        break;
+      case 'telegram':
+        shareUrl = `https://t.me/share/url?url=${encodeURIComponent(blogUrl)}&text=${encodeURIComponent(post.title)}`;
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(blogUrl);
+        alert("Link copied to clipboard!");
+        return;
+      default:
+        return;
+    }
+
+    window.open(shareUrl, '_blank');
+  };
+
   return (
     <div className="blog-container">
       <h1 className="blog-title">AKHMAM Blog</h1>
       {posts.map(post => (
-        <div key={post.id} className="blog-post">
-          {post.image && (
-            <img
-              src={`${baseURL}/${post.image}`}
-              alt={post.title}
-              className="post-image"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = `${baseURL}/assets/uploads/default.jpg`; // fallback
-              }}
-            />
-          )}
+        <div key={post.id} className="blog-post" id={`post-${post.id}`}>
+          <img src={`http://localhost:5000/${post.image}`} alt={post.title} className="post-image" />
           <div className="post-content">
             <h2>{post.title}</h2>
             <p>{post.description}</p>
@@ -86,6 +103,17 @@ function Blog() {
               <span className="comment-count">
                 <FaComment /> {post.comments?.length || 0} Comments
               </span>
+            </div>
+
+            {/* ✅ Share Section */}
+            <div className="share-section">
+              <FaShareAlt style={{ marginRight: '8px' }} />
+              <span>Share:</span>
+              <button onClick={() => handleShare('facebook', post)} title="Share on Facebook"><FaFacebook /></button>
+              <button onClick={() => handleShare('twitter', post)} title="Share on Twitter"><FaTwitter /></button>
+              <button onClick={() => handleShare('whatsapp', post)} title="Share on WhatsApp"><FaWhatsapp /></button>
+              <button onClick={() => handleShare('telegram', post)} title="Share on Telegram"><FaTelegram /></button>
+              <button onClick={() => handleShare('copy', post)} title="Copy Link"><FaCopy /></button>
             </div>
 
             <form onSubmit={(e) => handleCommentSubmit(e, post.id)} className="comment-form">
