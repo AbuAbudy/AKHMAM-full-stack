@@ -8,11 +8,14 @@ import "../../styles/AdminBlog.css";
 
 function AdminBlog() {
   const [posts, setPosts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [form, setForm] = useState({
     title: "",
     description: "",
     image: null,
     preview: "",
+    tags: "",      // comma-separated string
+    category: "",  // new field for category
   });
   const [editingId, setEditingId] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
@@ -20,6 +23,7 @@ function AdminBlog() {
 
   useEffect(() => {
     fetchPosts();
+    fetchCategories();
   }, []);
 
   useEffect(() => {
@@ -31,11 +35,32 @@ function AdminBlog() {
     setLoading(true);
     try {
       const res = await axios.get("/api/blog");
-setPosts(res.data.posts || []);
+      // Normalize tags: parse JSON string to array if needed
+      const normalizedPosts = res.data.posts.map((post) => {
+        let tags = post.tags;
+        if (typeof tags === "string") {
+          try {
+            tags = JSON.parse(tags);
+          } catch {
+            tags = [];
+          }
+        }
+        return { ...post, tags };
+      });
+      setPosts(normalizedPosts || []);
     } catch (err) {
       toast.error("Failed to load blog posts");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get("/api/blog/categories");
+      setCategories(res.data.categories || []);
+    } catch (err) {
+      toast.error("Failed to load categories");
     }
   };
 
@@ -59,18 +84,32 @@ setPosts(res.data.posts || []);
       title: post.title,
       description: post.description,
       image: null,
-      preview: post.image
-        ? `http://localhost:5000/${post.image}`
-        : "",
+      preview: post.image ? `http://localhost:5000/${post.image}` : "",
+      tags: Array.isArray(post.tags) ? post.tags.join(", ") : "",
+      category: post.category || "",
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!form.category) {
+      toast.error("Please select a category");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("title", form.title);
     formData.append("description", form.description);
+    formData.append("category", form.category);
     if (form.image) formData.append("image", form.image);
+
+    // Convert tags string to array and append as JSON string in formData
+    const tagsArray = form.tags
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0);
+    formData.append("tags", JSON.stringify(tagsArray));
 
     try {
       setLoading(true);
@@ -81,7 +120,7 @@ setPosts(res.data.posts || []);
         await axios.post("/api/blog", formData);
         toast.success("Post created successfully");
       }
-      setForm({ title: "", description: "", image: null, preview: "" });
+      setForm({ title: "", description: "", image: null, preview: "", tags: "", category: "" });
       setEditingId(null);
       fetchPosts();
     } catch (err) {
@@ -110,10 +149,7 @@ setPosts(res.data.posts || []);
     <div className={`admin-container ${darkMode ? "dark" : ""}`}>
       <div className="admin-header">
         <h2>Manage Blog Posts</h2>
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          className="dark-mode-toggle"
-        >
+        <button onClick={() => setDarkMode(!darkMode)} className="dark-mode-toggle">
           {darkMode ? <FaMoon /> : <FaSun />}
         </button>
       </div>
@@ -135,16 +171,37 @@ setPosts(res.data.posts || []);
           required
         ></textarea>
 
+        {/* Category select */}
+        <input
+  type="text"
+  name="category"
+  list="category-options"
+  placeholder="Category (select or type new)"
+  value={form.category}
+  onChange={handleChange}
+  required
+/>
+<datalist id="category-options">
+  {categories.map((cat) => (
+    <option key={cat.id} value={cat.name} />
+  ))}
+</datalist>
+
+
+        {/* Tags input */}
+        <input
+          type="text"
+          name="tags"
+          placeholder="Tags (comma separated)"
+          value={form.tags}
+          onChange={handleChange}
+        />
+
         {form.preview && (
           <img src={form.preview} alt="Preview" className="preview-image" />
         )}
 
-        <input
-          type="file"
-          name="image"
-          accept="image/*"
-          onChange={handleChange}
-        />
+        <input type="file" name="image" accept="image/*" onChange={handleChange} />
         <button type="submit" disabled={loading}>
           {editingId ? "Update" : "Create"} Post
         </button>
@@ -169,14 +226,30 @@ setPosts(res.data.posts || []);
               )}
               <h3>{post.title}</h3>
               <p>{post.description}</p>
+
+              {/* Show category */}
+              <p className="post-category">
+                <strong>Category: </strong>{post.category || <em>None</em>}
+              </p>
+
+              {/* Show tags safely */}
+              <div className="tags-container">
+                {Array.isArray(post.tags) && post.tags.length > 0 ? (
+                  post.tags.map((tag, idx) => (
+                    <span key={idx} className="tag">
+                      {tag}
+                    </span>
+                  ))
+                ) : (
+                  <small>No tags</small>
+                )}
+              </div>
+
               <div className="admin-buttons">
                 <button onClick={() => handleEdit(post)}>
                   <FaEdit /> Edit
                 </button>
-                <button
-                  onClick={() => handleDelete(post.id)}
-                  className="delete"
-                >
+                <button onClick={() => handleDelete(post.id)} className="delete">
                   <FaTrash /> Delete
                 </button>
               </div>

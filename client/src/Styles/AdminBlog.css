@@ -74,7 +74,8 @@ body.dark-mode {
 
 .admin-form input[type="text"],
 .admin-form textarea,
-.admin-form input[type="file"] {
+.admin-form input[type="file"],
+.admin-form select {
   padding: 12px;
   font-size: 1rem;
   border: 1px solid var(--border-light);
@@ -82,14 +83,20 @@ body.dark-mode {
   background-color: #fff;
   color: #111;
   transition: background-color 0.3s ease, border-color 0.3s ease;
+  font-family: 'Poppins', sans-serif;
 }
 
 .admin-container.dark .admin-form input[type="text"],
 .admin-container.dark .admin-form textarea,
-.admin-container.dark .admin-form input[type="file"] {
+.admin-container.dark .admin-form input[type="file"],
+.admin-container.dark .admin-form select {
   background-color: #333;
   color: #eee;
   border-color: var(--border-dark);
+}
+
+.admin-form select {
+  cursor: pointer;
 }
 
 .admin-form textarea {
@@ -107,6 +114,7 @@ body.dark-mode {
   background-color: var(--btn-light);
   color: white;
   transition: background-color 0.2s ease;
+  font-family: 'Poppins', sans-serif;
 }
 
 .admin-form button:hover {
@@ -211,4 +219,28 @@ body.dark-mode {
   border-radius: 8px;
   margin-bottom: 15px;
   object-fit: contain;
+}
+
+.post-category {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #5a2ea6;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.tag {
+  background-color: #7e57c2;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  user-select: none;
+  font-family: 'Poppins', sans-serif;
 }

@@ -14,16 +14,26 @@ const BlogContent = sequelize.define('BlogContent', {
   },
 
   image: {
-    type: DataTypes.STRING, 
+    type: DataTypes.STRING,
   },
 
   description: {
     type: DataTypes.TEXT,
   },
 
+  category: {
+    type: DataTypes.STRING,
+    defaultValue: 'General',
+  },
+
+  tags: {
+    type: DataTypes.JSON,
+    defaultValue: [],
+  },
+
   likes: {
     type: DataTypes.JSON,
-    defaultValue: [], 
+    defaultValue: [],
   },
 
   comments: {

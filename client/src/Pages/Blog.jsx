@@ -1,5 +1,3 @@
-// ✅ UPDATED Blog.jsx (Commenting System with Optional Name + Timestamp)
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../styles/Blog.css';
@@ -13,12 +11,28 @@ function Blog() {
   const [commentInputs, setCommentInputs] = useState({});
   const [pagination, setPagination] = useState({ totalPosts: 0, totalPages: 0, currentPage: 1, pageSize: 8 });
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('');
+  const [tag, setTag] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [showAllComments, setShowAllComments] = useState({});
   const currentUser = 'user_123';
+
+  // Fetch categories for the category filter dropdown
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get('/api/blog/categories');
+      setCategories(res.data.categories || []);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+    }
+  };
 
   const fetchPosts = async (page = 1) => {
     setLoading(true);
     try {
-      const res = await axios.get(`/api/blog?page=${page}`);
+      const query = new URLSearchParams({ page, search, category, tag }).toString();
+      const res = await axios.get(`/api/blog?${query}`);
       setPosts(res.data.posts);
       setPagination(res.data.pagination);
     } catch (err) {
@@ -28,7 +42,13 @@ function Blog() {
     }
   };
 
-  useEffect(() => { fetchPosts(1); }, []);
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    fetchPosts(1);
+  }, [search, category, tag]);
 
   const handleLikeToggle = (id) => {
     setPosts(prev =>
@@ -130,6 +150,25 @@ function Blog() {
   return (
     <div className="blog-container">
       <h1 className="blog-title">AKHMAM Blog</h1>
+
+      <div className="blog-filters">
+        <input type="text" placeholder="Search by title..." value={search} onChange={e => setSearch(e.target.value)} />
+        
+        <select value={category} onChange={e => setCategory(e.target.value)}>
+          <option value="">All Categories</option>
+          {categories.map(cat => (
+            <option key={cat.id} value={cat.name}>{cat.name}</option>
+          ))}
+        </select>
+        
+        <select value={tag} onChange={e => setTag(e.target.value)}>
+          <option value="">All Tags</option>
+          <option value="Ramadan">Ramadan</option>
+          <option value="Zakat">Zakat</option>
+          <option value="Orphans">Orphans</option>
+        </select>
+      </div>
+
       {loading ? (
         <p>Loading posts...</p>
       ) : posts.length === 0 ? (
@@ -180,12 +219,21 @@ function Blog() {
               </form>
 
               <div className="comment-list">
-                {post.comments?.map((comment, index) => (
+                {(showAllComments[post.id] ? post.comments : post.comments?.slice(-1)).map((comment, index) => (
                   <div key={index} className="comment">
                     <strong>{comment.name}</strong> <span style={{ fontSize: '0.85rem', color: '#666' }}> - {timeAgo(comment.timestamp)}</span>
                     <p>{comment.text}</p>
                   </div>
                 ))}
+
+                {post.comments && post.comments.length > 1 && (
+                  <button 
+                    className="show-more-comments" 
+                    onClick={() => setShowAllComments(prev => ({ ...prev, [post.id]: !prev[post.id] }))}
+                  >
+                    {showAllComments[post.id] ? 'Show Less Comments' : `Show ${post.comments.length - 1} More Comment${post.comments.length - 1 > 1 ? 's' : ''}`}
+                  </button>
+                )}
               </div>
             </div>
           </div>

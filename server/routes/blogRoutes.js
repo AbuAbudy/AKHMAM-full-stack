@@ -5,10 +5,12 @@ const {
   getAllPosts,
   createPost,
   updatePost,
-  deletePost
+  deletePost,
+  getCategories, // 👈 ADD THIS
 } = require('../controllers/blogController');
 
-router.get('/', getAllPosts);  // supports ?page=1 internally
+router.get('/', getAllPosts);
+router.get('/categories', getCategories); // ✅ ADD THIS ROUTE
 router.post('/', upload.single('image'), createPost);
 router.put('/:id', upload.single('image'), updatePost);
 router.delete('/:id', deletePost);
