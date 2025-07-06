@@ -7,20 +7,25 @@ const BlogContent = sequelize.define('BlogContent', {
     autoIncrement: true,
     primaryKey: true,
   },
+
   title: {
     type: DataTypes.STRING,
     allowNull: false,
   },
+
   image: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING, 
   },
+
   description: {
     type: DataTypes.TEXT,
   },
+
   likes: {
     type: DataTypes.JSON,
-    defaultValue: [],
+    defaultValue: [], 
   },
+
   comments: {
     type: DataTypes.JSON,
     defaultValue: [],

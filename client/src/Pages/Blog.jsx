@@ -1,19 +1,19 @@
+// ✅ UPDATED Blog.jsx (Commenting System with Optional Name + Timestamp)
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../styles/Blog.css';
-import { FaHeart, FaRegHeart, FaComment, FaShareAlt, FaFacebook, FaTwitter, FaWhatsapp, FaTelegram, FaCopy } from 'react-icons/fa';
+import {
+  FaHeart, FaRegHeart, FaComment, FaShareAlt,
+  FaFacebook, FaTwitter, FaWhatsapp, FaTelegram, FaCopy
+} from 'react-icons/fa';
 
 function Blog() {
   const [posts, setPosts] = useState([]);
   const [commentInputs, setCommentInputs] = useState({});
-  const [pagination, setPagination] = useState({
-    totalPosts: 0,
-    totalPages: 0,
-    currentPage: 1,
-    pageSize: 8,
-  });
+  const [pagination, setPagination] = useState({ totalPosts: 0, totalPages: 0, currentPage: 1, pageSize: 8 });
   const [loading, setLoading] = useState(false);
-  const currentUser = 'user_123'; // Simulated user
+  const currentUser = 'user_123';
 
   const fetchPosts = async (page = 1) => {
     setLoading(true);
@@ -28,9 +28,7 @@ function Blog() {
     }
   };
 
-  useEffect(() => {
-    fetchPosts(1);
-  }, []);
+  useEffect(() => { fetchPosts(1); }, []);
 
   const handleLikeToggle = (id) => {
     setPosts(prev =>
@@ -49,27 +47,49 @@ function Blog() {
     );
   };
 
-  const handleCommentChange = (e, id) => {
-    setCommentInputs({ ...commentInputs, [id]: e.target.value });
+  const handleCommentChange = (e, id, field) => {
+    setCommentInputs({
+      ...commentInputs,
+      [id]: {
+        ...commentInputs[id],
+        [field]: e.target.value
+      }
+    });
   };
 
   const handleCommentSubmit = (e, id) => {
     e.preventDefault();
-    if (!commentInputs[id]) return;
+    const { name = '', text = '' } = commentInputs[id] || {};
+    if (!text.trim()) return;
 
-    const newComment = { name: 'User', text: commentInputs[id] };
-    setPosts(prev =>
-      prev.map(post => {
-        if (post.id === id) {
-          const updatedComments = [...(post.comments || []), newComment];
-          axios.put(`/api/blog/${id}`, { ...post, comments: updatedComments });
-          return { ...post, comments: updatedComments };
-        }
-        return post;
-      })
-    );
+    const newComment = {
+      name: name.trim() || 'Anonymous',
+      text: text.trim(),
+      timestamp: new Date().toISOString()
+    };
 
-    setCommentInputs({ ...commentInputs, [id]: '' });
+    setPosts(prev => prev.map(post => {
+      if (post.id === id) {
+        const updatedComments = [...(post.comments || []), newComment];
+        axios.put(`/api/blog/${id}`, { ...post, comments: updatedComments });
+        return { ...post, comments: updatedComments };
+      }
+      return post;
+    }));
+
+    setCommentInputs({ ...commentInputs, [id]: {} });
+  };
+
+  const timeAgo = (isoString) => {
+    const now = new Date();
+    const date = new Date(isoString);
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    return date.toLocaleDateString();
   };
 
   const handleShare = (platform, post) => {
@@ -103,7 +123,7 @@ function Blog() {
   const handlePageClick = (pageNum) => {
     if (pageNum !== pagination.currentPage) {
       fetchPosts(pageNum);
-      window.scrollTo({ top: 0, behavior: 'smooth' }); // scroll to top on page change
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -123,10 +143,7 @@ function Blog() {
               <p>{post.description}</p>
 
               <div className="post-actions">
-                <button
-                  className={`like-button ${post.likes?.includes(currentUser) ? 'liked' : ''}`}
-                  onClick={() => handleLikeToggle(post.id)}
-                >
+                <button className={`like-button ${post.likes?.includes(currentUser) ? 'liked' : ''}`} onClick={() => handleLikeToggle(post.id)}>
                   {post.likes?.includes(currentUser) ? <FaHeart /> : <FaRegHeart />}
                 </button>
                 <span>{post.likes?.length || 0} Likes</span>
@@ -138,19 +155,25 @@ function Blog() {
               <div className="share-section">
                 <FaShareAlt style={{ marginRight: '8px' }} />
                 <span>Share:</span>
-                <button onClick={() => handleShare('facebook', post)} title="Share on Facebook"><FaFacebook /></button>
-                <button onClick={() => handleShare('twitter', post)} title="Share on Twitter"><FaTwitter /></button>
-                <button onClick={() => handleShare('whatsapp', post)} title="Share on WhatsApp"><FaWhatsapp /></button>
-                <button onClick={() => handleShare('telegram', post)} title="Share on Telegram"><FaTelegram /></button>
-                <button onClick={() => handleShare('copy', post)} title="Copy Link"><FaCopy /></button>
+                <button onClick={() => handleShare('facebook', post)} title="Facebook"><FaFacebook /></button>
+                <button onClick={() => handleShare('twitter', post)} title="Twitter"><FaTwitter /></button>
+                <button onClick={() => handleShare('whatsapp', post)} title="WhatsApp"><FaWhatsapp /></button>
+                <button onClick={() => handleShare('telegram', post)} title="Telegram"><FaTelegram /></button>
+                <button onClick={() => handleShare('copy', post)} title="Copy"><FaCopy /></button>
               </div>
 
               <form onSubmit={(e) => handleCommentSubmit(e, post.id)} className="comment-form">
+                <input
+                  type="text"
+                  placeholder="Your name (optional)"
+                  value={commentInputs[post.id]?.name || ''}
+                  onChange={(e) => handleCommentChange(e, post.id, 'name')}
+                />
                 <textarea
                   rows="2"
                   placeholder="Write a comment..."
-                  value={commentInputs[post.id] || ''}
-                  onChange={(e) => handleCommentChange(e, post.id)}
+                  value={commentInputs[post.id]?.text || ''}
+                  onChange={(e) => handleCommentChange(e, post.id, 'text')}
                   required
                 ></textarea>
                 <button type="submit">Post</button>
@@ -159,7 +182,7 @@ function Blog() {
               <div className="comment-list">
                 {post.comments?.map((comment, index) => (
                   <div key={index} className="comment">
-                    <strong>{comment.name}</strong>
+                    <strong>{comment.name}</strong> <span style={{ fontSize: '0.85rem', color: '#666' }}> - {timeAgo(comment.timestamp)}</span>
                     <p>{comment.text}</p>
                   </div>
                 ))}
@@ -169,17 +192,12 @@ function Blog() {
         ))
       )}
 
-      {/* Pagination */}
       {pagination.totalPages > 1 && (
         <nav className="pagination">
           {[...Array(pagination.totalPages)].map((_, idx) => {
             const pageNum = idx + 1;
             return (
-              <button
-                key={pageNum}
-                className={pageNum === pagination.currentPage ? 'active' : ''}
-                onClick={() => handlePageClick(pageNum)}
-              >
+              <button key={pageNum} className={pageNum === pagination.currentPage ? 'active' : ''} onClick={() => handlePageClick(pageNum)}>
                 {pageNum}
               </button>
             );

@@ -5,7 +5,7 @@ const BlogContent = require('../models/BlogContent');
 const getAllPosts = async (req, res) => {
   try {
     let page = parseInt(req.query.page) || 1;
-    let limit = 8; // fixed page size as you requested
+    let limit = 8;
     if (page < 1) page = 1;
     const offset = (page - 1) * limit;
 
@@ -57,21 +57,33 @@ const createPost = async (req, res) => {
   }
 };
 
-// UPDATE blog post
+// UPDATE a blog post (or add likes/comments)
 const updatePost = async (req, res) => {
   try {
     const { id } = req.params;
     const post = await BlogContent.findByPk(id);
     if (!post) return res.status(404).json({ error: 'Post not found' });
 
-    const { title, description } = req.body;
+    const { title, description, likes, comments } = req.body;
 
     if (req.file) {
       post.image = path.posix.join('uploads', req.file.filename);
     }
 
-    post.title = title || post.title;
-    post.description = description || post.description;
+    if (title !== undefined) post.title = title;
+    if (description !== undefined) post.description = description;
+    if (likes !== undefined) post.likes = likes;
+
+    // Append new comment (with timestamp) to existing comments
+    if (comments) {
+      const newComment = comments[comments.length - 1];
+      const enhancedComment = {
+        name: newComment.name || 'Anonymous',
+        text: newComment.text,
+        timestamp: new Date().toISOString(),
+      };
+      post.comments = [...(post.comments || []), enhancedComment];
+    }
 
     await post.save();
     res.json({ message: 'Post updated successfully', post });
