@@ -4,12 +4,36 @@ import axios from 'axios';
 
 function Contact() {
   const [content, setContent] = useState(null);
+  const [form, setForm] = useState({
+    fullName: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [status, setStatus] = useState('');
 
   useEffect(() => {
     axios.get('http://localhost:5000/api/contact')
       .then((res) => setContent(res.data))
       .catch((err) => console.error('Error loading contact content:', err));
   }, []);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('');
+    try {
+      await axios.post('http://localhost:5000/api/contact/message', form);
+      setStatus('Message sent successfully!');
+      setForm({ fullName: '', email: '', subject: '', message: '' });
+    } catch (err) {
+      setStatus('Failed to send message.');
+      console.error(err);
+    }
+  };
 
   if (!content) return <p>Loading contact info...</p>;
 
@@ -19,25 +43,23 @@ function Contact() {
       <p className="intro-text">{content.form.intro}</p>
 
       <div className="contact-content">
-        {/* Contact Form */}
         <div className="contact-form-section">
           <h2>{content.form.title}</h2>
-          <form className="contact-form">
-            <input type="text" placeholder="Full Name" required />
-            <input type="email" placeholder="Email Address" required />
-            <input type="text" placeholder="Subject" required />
-            <textarea rows="5" placeholder="Your Message..." required></textarea>
+          <form className="contact-form" onSubmit={handleSubmit}>
+            <input name="fullName" value={form.fullName} onChange={handleChange} type="text" placeholder="Full Name" required />
+            <input name="email" value={form.email} onChange={handleChange} type="email" placeholder="Email Address" required />
+            <input name="subject" value={form.subject} onChange={handleChange} type="text" placeholder="Subject" required />
+            <textarea name="message" value={form.message} onChange={handleChange} rows="5" placeholder="Your Message..." required></textarea>
             <button type="submit">Send Message</button>
+            {status && <p className="status-message">{status}</p>}
           </form>
         </div>
 
-        {/* Contact Info */}
         <div className="contact-info">
           <h2>Contact Information</h2>
           <p><strong>Email:</strong> {content.info.email}</p>
           <p><strong>Phone:</strong> {content.info.phone}</p>
           <p><strong>Address:</strong> {content.info.address}</p>
-
           <div className="social-links">
             <h3>Connect with us</h3>
             <div className="icons">
@@ -51,7 +73,6 @@ function Contact() {
         </div>
       </div>
 
-      {/* Google Map Embed */}
       <div className="map-container" style={{ width: '100%', height: '300px', marginTop: '20px' }}>
         <iframe
           title="AKHMAM Location"
@@ -64,6 +85,7 @@ function Contact() {
           referrerPolicy="no-referrer-when-downgrade"
         ></iframe>
       </div>
+      📍 AKMAM Main Office — On Awash Bank Building
     </div>
   );
 }

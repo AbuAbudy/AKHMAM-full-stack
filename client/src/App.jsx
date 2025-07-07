@@ -8,7 +8,7 @@ import Donate from './pages/Donate';
 import Volunteer from './Pages/Volunteer';
 import Projects from './pages/Projects';
 import Blog from './pages/Blog';
-import Contact from './pages/Contact';
+import Contact from './Pages/Contact';
 
 
 

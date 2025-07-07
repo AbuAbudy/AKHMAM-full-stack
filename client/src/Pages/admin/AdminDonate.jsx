@@ -11,6 +11,7 @@ function AdminDonate() {
   const [darkMode, setDarkMode] = useState(false);
   const [donationProofs, setDonationProofs] = useState([]);
   const [bankAccounts, setBankAccounts] = useState([]);
+  const [expandedReasons, setExpandedReasons] = useState({}); // For readmore/readless toggles
 
   useEffect(() => {
     fetchContent();
@@ -221,6 +222,13 @@ function AdminDonate() {
     }
   };
 
+  const toggleReason = (key) => {
+    setExpandedReasons((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
   if (loading) return <p>Loading donate content...</p>;
 
   return (
@@ -376,70 +384,86 @@ function AdminDonate() {
         </button>
       </div>
 
-      {/* Donation Proofs Section */}
+      {/* Donation Proofs Section (vertical list with readmore/readless) */}
       <div className="home-section">
         <h2>Donation Proofs</h2>
         {donationProofs.length === 0 ? (
           <p>No donation proofs submitted yet.</p>
         ) : (
-          <table
-            style={{
-              width: '100%',
-              borderCollapse: 'collapse',
-              textAlign: 'left',
-              fontSize: '14px',
-            }}
-          >
-            <thead>
-              <tr>
-                <th>Donor Name</th>
-                <th>Amount (ETB)</th>
-                <th>Reason</th>
-                <th>Email</th>
-                <th>Timestamp</th>
-                <th>Screenshot</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {donationProofs.map((proof, index) => (
-                <tr key={index}>
-                  <td>{proof.name || '-'}</td>
-                  <td>{proof.amount || '-'}</td>
-                  <td>{proof.reason || '-'}</td>
-                  <td>{proof.email || '-'}</td>
-                  <td>{proof.timestamp ? new Date(proof.timestamp).toLocaleString() : '-'}</td>
-                  <td>
-                    {proof.screenshot ? (
-                      <a
-                        href={`http://localhost:5000${proof.screenshot}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Click to view full image"
+          donationProofs.map((proof, index) => {
+            const isExpanded = expandedReasons[proof.key] || false;
+            const reasonText = proof.reason || '-';
+            const shortReason = reasonText.length > 100 ? reasonText.slice(0, 100) + '...' : reasonText;
+            return (
+              <div
+                key={proof.key}
+                style={{
+                  border: '1px solid #ccc',
+                  borderRadius: '8px',
+                  padding: '15px',
+                  marginBottom: '15px',
+                  backgroundColor: darkMode ? '#222' : '#fafafa',
+                  color: darkMode ? '#eee' : '#222',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <h3>{proof.name || 'Anonymous Donor'}</h3>
+                  <button
+                    onClick={() => deleteDonationProof(proof.key)}
+                    style={{ color: 'red', border: 'none', background: 'none', cursor: 'pointer' }}
+                    title="Delete donation proof"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+
+                <p><strong>Amount (ETB):</strong> {proof.amount || '-'}</p>
+                <p>
+                  <strong>Reason:</strong>{' '}
+                  {reasonText.length <= 100 ? (
+                    reasonText
+                  ) : (
+                    <>
+                      {isExpanded ? reasonText : shortReason}
+                      <button
+                        onClick={() => toggleReason(proof.key)}
+                        style={{
+                          marginLeft: '8px',
+                          background: 'none',
+                          border: 'none',
+                          color: '#007bff',
+                          cursor: 'pointer',
+                          fontWeight: '600',
+                        }}
                       >
-                        <img
-                          src={`http://localhost:5000${proof.screenshot}?v=${Date.now()}`}
-                          alt="Proof Screenshot"
-                          width="100"
-                          style={{ borderRadius: '6px', border: '1px solid #ccc', cursor: 'pointer' }}
-                        />
-                      </a>
-                    ) : (
-                      '-'
-                    )}
-                  </td>
-                  <td>
-                    <button
-                      onClick={() => deleteDonationProof(proof.key)}
-                      style={{ color: 'red', border: 'none', background: 'none', cursor: 'pointer' }}
-                    >
-                      <FaTrash />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                        {isExpanded ? 'Read Less' : 'Read More'}
+                      </button>
+                    </>
+                  )}
+                </p>
+                <p><strong>Email:</strong> {proof.email || '-'}</p>
+                <p><strong>Timestamp:</strong> {proof.timestamp ? new Date(proof.timestamp).toLocaleString() : '-'}</p>
+                {proof.screenshot ? (
+                  <a
+                    href={`http://localhost:5000${proof.screenshot}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Click to view full image"
+                    style={{ display: 'inline-block', marginTop: '10px' }}
+                  >
+                    <img
+                      src={`http://localhost:5000${proof.screenshot}?v=${Date.now()}`}
+                      alt="Proof Screenshot"
+                      width="200"
+                      style={{ borderRadius: '6px', border: '1px solid #ccc', cursor: 'pointer' }}
+                    />
+                  </a>
+                ) : (
+                  <p>No screenshot provided.</p>
+                )}
+              </div>
+            );
+          })
         )}
       </div>
     </div>

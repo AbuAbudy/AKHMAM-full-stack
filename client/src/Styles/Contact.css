@@ -88,6 +88,7 @@
   
   .map-container {
     margin-top: 50px;
+    margin-bottom: 10px;
     border-radius: 10px;
     overflow: hidden;
   }
