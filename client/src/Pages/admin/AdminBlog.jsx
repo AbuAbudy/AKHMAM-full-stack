@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaSun, FaMoon, FaTrash, FaEdit } from "react-icons/fa";
 import Loader from "../../components/Loader";
@@ -14,8 +14,8 @@ function AdminBlog() {
     description: "",
     image: null,
     preview: "",
-    tags: "",      // comma-separated string
-    category: "",  // new field for category
+    tags: "",
+    category: "",
   });
   const [editingId, setEditingId] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
@@ -35,7 +35,6 @@ function AdminBlog() {
     setLoading(true);
     try {
       const res = await axios.get("/api/blog");
-      // Normalize tags: parse JSON string to array if needed
       const normalizedPosts = res.data.posts.map((post) => {
         let tags = post.tags;
         if (typeof tags === "string") {
@@ -48,8 +47,8 @@ function AdminBlog() {
         return { ...post, tags };
       });
       setPosts(normalizedPosts || []);
-    } catch (err) {
-      toast.error("Failed to load blog posts");
+    } catch {
+      toast.error("❌ Failed to load blog posts");
     } finally {
       setLoading(false);
     }
@@ -59,8 +58,8 @@ function AdminBlog() {
     try {
       const res = await axios.get("/api/blog/categories");
       setCategories(res.data.categories || []);
-    } catch (err) {
-      toast.error("Failed to load categories");
+    } catch {
+      toast.error("❌ Failed to load categories");
     }
   };
 
@@ -92,7 +91,6 @@ function AdminBlog() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!form.category) {
       toast.error("Please select a category");
       return;
@@ -103,8 +101,6 @@ function AdminBlog() {
     formData.append("description", form.description);
     formData.append("category", form.category);
     if (form.image) formData.append("image", form.image);
-
-    // Convert tags string to array and append as JSON string in formData
     const tagsArray = form.tags
       .split(",")
       .map((tag) => tag.trim())
@@ -115,38 +111,75 @@ function AdminBlog() {
       setLoading(true);
       if (editingId) {
         await axios.put(`/api/blog/${editingId}`, formData);
-        toast.success("Post updated successfully");
+        toast.success("✅ Post updated successfully");
       } else {
         await axios.post("/api/blog", formData);
-        toast.success("Post created successfully");
+        toast.success("✅ Post created successfully");
       }
       setForm({ title: "", description: "", image: null, preview: "", tags: "", category: "" });
       setEditingId(null);
       fetchPosts();
-    } catch (err) {
-      toast.error("Submission failed");
+    } catch {
+      toast.error("❌ Submission failed");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this post?")) {
-      try {
-        setLoading(true);
-        await axios.delete(`/api/blog/${id}`);
-        toast.success("Post deleted successfully");
-        fetchPosts();
-      } catch (err) {
-        toast.error("Failed to delete post");
-      } finally {
-        setLoading(false);
-      }
-    }
+  const handleDelete = (id) => {
+    toast(
+      ({ closeToast }) => (
+        <div style={{ textAlign: "center" }}>
+          <p>Are you sure you want to delete this post?</p>
+          <button
+            onClick={async () => {
+              try {
+                setLoading(true);
+                await axios.delete(`/api/blog/${id}`);
+                toast.success("🗑️ Post deleted successfully");
+                fetchPosts();
+              } catch {
+                toast.error("❌ Failed to delete post");
+              } finally {
+                setLoading(false);
+              }
+              closeToast();
+            }}
+            style={{
+              margin: "5px",
+              padding: "6px 12px",
+              backgroundColor: "#c62828",
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            Yes, Delete
+          </button>
+          <button
+            onClick={closeToast}
+            style={{
+              margin: "5px",
+              padding: "6px 12px",
+              backgroundColor: "#aaa",
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      ),
+      { autoClose: false }
+    );
   };
 
   return (
     <div className={`admin-container ${darkMode ? "dark" : ""}`}>
+      <ToastContainer position="top-center" />
       <div className="admin-header">
         <h2>Manage Blog Posts</h2>
         <button onClick={() => setDarkMode(!darkMode)} className="dark-mode-toggle">
@@ -171,24 +204,21 @@ function AdminBlog() {
           required
         ></textarea>
 
-        {/* Category select */}
         <input
-  type="text"
-  name="category"
-  list="category-options"
-  placeholder="Category (select or type new)"
-  value={form.category}
-  onChange={handleChange}
-  required
-/>
-<datalist id="category-options">
-  {categories.map((cat) => (
-    <option key={cat.id} value={cat.name} />
-  ))}
-</datalist>
+          type="text"
+          name="category"
+          list="category-options"
+          placeholder="Category (select or type new)"
+          value={form.category}
+          onChange={handleChange}
+          required
+        />
+        <datalist id="category-options">
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.name} />
+          ))}
+        </datalist>
 
-
-        {/* Tags input */}
         <input
           type="text"
           name="tags"
@@ -197,10 +227,7 @@ function AdminBlog() {
           onChange={handleChange}
         />
 
-        {form.preview && (
-          <img src={form.preview} alt="Preview" className="preview-image" />
-        )}
-
+        {form.preview && <img src={form.preview} alt="Preview" className="preview-image" />}
         <input type="file" name="image" accept="image/*" onChange={handleChange} />
         <button type="submit" disabled={loading}>
           {editingId ? "Update" : "Create"} Post
@@ -227,12 +254,11 @@ function AdminBlog() {
               <h3>{post.title}</h3>
               <p>{post.description}</p>
 
-              {/* Show category */}
               <p className="post-category">
-                <strong>Category: </strong>{post.category || <em>None</em>}
+                <strong>Category: </strong>
+                {post.category || <em>None</em>}
               </p>
 
-              {/* Show tags safely */}
               <div className="tags-container">
                 {Array.isArray(post.tags) && post.tags.length > 0 ? (
                   post.tags.map((tag, idx) => (

@@ -7,6 +7,8 @@ import {
   FaBookOpen,
 } from "react-icons/fa";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../styles/Volunteer.css";
 
 function Volunteer() {
@@ -32,8 +34,11 @@ function Volunteer() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/volunteers/apply", formData);
-      alert(res.data.message || "Submitted successfully!");
+      const res = await axios.post(
+        "http://localhost:5000/api/volunteers/apply",
+        formData
+      );
+      toast.success(res.data.message || "Submitted successfully!");
       setFormData({
         name: "",
         email: "",
@@ -43,7 +48,7 @@ function Volunteer() {
       });
     } catch (err) {
       console.error("Submission error", err);
-      alert("Submission failed.");
+      toast.error("Submission failed.");
     }
   };
 
@@ -51,6 +56,8 @@ function Volunteer() {
 
   return (
     <div className="volunteer-page">
+      <ToastContainer position="top-right" autoClose={4000} />
+
       {content.hero && (
         <section
           className="volunteer-hero"
@@ -121,20 +128,51 @@ function Volunteer() {
 
         <form className="volunteer-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Full Name<span>*</span></label>
-            <input type="text" name="name" required value={formData.name} onChange={handleChange} />
+            <label>
+              Full Name<span>*</span>
+            </label>
+            <input
+              type="text"
+              name="name"
+              required
+              value={formData.name}
+              onChange={handleChange}
+            />
           </div>
           <div className="form-group">
-            <label>Email<span>*</span></label>
-            <input type="email" name="email" required value={formData.email} onChange={handleChange} />
+            <label>
+              Email<span>*</span>
+            </label>
+            <input
+              type="email"
+              name="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+            />
           </div>
           <div className="form-group">
-            <label>Phone Number<span>*</span></label>
-            <input type="tel" name="phone" required value={formData.phone} onChange={handleChange} />
+            <label>
+              Phone Number<span>*</span>
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              required
+              value={formData.phone}
+              onChange={handleChange}
+            />
           </div>
           <div className="form-group">
-            <label>Area of Interest / Skill<span>*</span></label>
-            <select name="interest" required value={formData.interest} onChange={handleChange}>
+            <label>
+              Area of Interest / Skill<span>*</span>
+            </label>
+            <select
+              name="interest"
+              required
+              value={formData.interest}
+              onChange={handleChange}
+            >
               <option value="">-- Select an area --</option>
               <option value="Teaching">Teaching Islamic Studies</option>
               <option value="Medical">Medical Support</option>
@@ -146,7 +184,12 @@ function Volunteer() {
           </div>
           <div className="form-group">
             <label>Why do you want to volunteer?</label>
-            <textarea name="message" rows="4" value={formData.message} onChange={handleChange} />
+            <textarea
+              name="message"
+              rows="4"
+              value={formData.message}
+              onChange={handleChange}
+            />
           </div>
           <button type="submit">Submit</button>
         </form>

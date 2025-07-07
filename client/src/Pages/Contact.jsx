@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/Contact.css';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Contact() {
   const [content, setContent] = useState(null);
@@ -10,7 +12,6 @@ function Contact() {
     subject: '',
     message: ''
   });
-  const [status, setStatus] = useState('');
 
   useEffect(() => {
     axios.get('http://localhost:5000/api/contact')
@@ -24,13 +25,12 @@ function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus('');
     try {
       await axios.post('http://localhost:5000/api/contact/message', form);
-      setStatus('Message sent successfully!');
+      toast.success('Message sent successfully!');
       setForm({ fullName: '', email: '', subject: '', message: '' });
     } catch (err) {
-      setStatus('Failed to send message.');
+      toast.error('Failed to send message.');
       console.error(err);
     }
   };
@@ -39,6 +39,7 @@ function Contact() {
 
   return (
     <div className="contact-container">
+      <ToastContainer />
       <h1 className="contact-title">Contact AKHMAM</h1>
       <p className="intro-text">{content.form.intro}</p>
 
@@ -51,7 +52,6 @@ function Contact() {
             <input name="subject" value={form.subject} onChange={handleChange} type="text" placeholder="Subject" required />
             <textarea name="message" value={form.message} onChange={handleChange} rows="5" placeholder="Your Message..." required></textarea>
             <button type="submit">Send Message</button>
-            {status && <p className="status-message">{status}</p>}
           </form>
         </div>
 

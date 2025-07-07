@@ -19,17 +19,14 @@ const getProjectContent = async (req, res) => {
 };
 
 const updateProjectContent = async (req, res) => {
-  // Use req.body.section and all other keys
   const { section, ...rest } = req.body;
 
   if (!section) {
     return res.status(400).json({ error: "Section is required" });
   }
 
-  // For images, multer puts them in req.files as array
-  // Map files by fieldname to file path
   const fileMap = {};
-  if (req.files && req.files.length) {
+  if (req.files?.length) {
     req.files.forEach((file) => {
       const relativePath = path.posix.join("assets", "uploads", file.filename);
       fileMap[file.fieldname] = relativePath;
@@ -37,13 +34,10 @@ const updateProjectContent = async (req, res) => {
   }
 
   try {
-    // Combine text fields and uploaded files
     const updates = { ...rest, ...fileMap };
 
-    // Iterate keys and update/create in DB
     await Promise.all(
       Object.entries(updates).map(async ([key, value]) => {
-        // Ignore undefined or null values to avoid overwriting
         if (value === undefined || value === null) return;
 
         const [record, created] = await ProjectContent.findOrCreate({

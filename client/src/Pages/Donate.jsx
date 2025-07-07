@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../styles/Donate.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Donate() {
   const [donateData, setDonateData] = useState(null);
@@ -12,7 +14,6 @@ function Donate() {
     email: '',
     screenshot: null,
   });
-  const [status, setStatus] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -24,6 +25,7 @@ function Donate() {
       .catch(err => {
         console.error(err);
         setLoading(false);
+        toast.error('Failed to load donation data.');
       });
   }, []);
 
@@ -38,10 +40,9 @@ function Donate() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    setStatus(null);
 
     if (!formData.name || !formData.amount || !formData.reason) {
-      setStatus({ type: 'error', message: 'Please fill all required fields.' });
+      toast.error('Please fill all required fields.');
       setSubmitting(false);
       return;
     }
@@ -55,10 +56,10 @@ function Donate() {
       const res = await axios.post('http://localhost:5000/api/donate/submit-proof', postData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      setStatus({ type: 'success', message: res.data.message });
+      toast.success(res.data.message);
       setFormData({ name: '', amount: '', reason: '', email: '', screenshot: null });
     } catch (err) {
-      setStatus({ type: 'error', message: err.response?.data?.error || 'Submission failed.' });
+      toast.error(err.response?.data?.error || 'Submission failed.');
     } finally {
       setSubmitting(false);
     }
@@ -81,6 +82,9 @@ function Donate() {
 
   return (
     <div className="donate-page">
+      {/* Toast container */}
+      <ToastContainer position="top-right" autoClose={4000} />
+
       {/* Hero Section */}
       <section
         className="donate-hero"
@@ -186,18 +190,6 @@ function Donate() {
             {submitting ? 'Submitting...' : 'Submit'}
           </button>
         </form>
-
-        {status && (
-          <p
-            style={{
-              marginTop: '15px',
-              color: status.type === 'success' ? 'green' : 'red',
-              fontWeight: 'bold'
-            }}
-          >
-            {status.message}
-          </p>
-        )}
       </section>
 
       {/* CTA Section */}

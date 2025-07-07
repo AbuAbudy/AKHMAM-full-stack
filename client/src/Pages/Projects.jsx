@@ -20,22 +20,44 @@ function Projects() {
   const projects = [];
   for (let i = 1; i <= 30; i++) {
     const title = projectsData[`project_${i}_title`];
-    if (!title) break;
+    const description = projectsData[`project_${i}_description`];
+    const status = projectsData[`project_${i}_status`];
+    const total = projectsData[`project_${i}_total`];
+    const current = projectsData[`project_${i}_current`];
+    const image = projectsData[`project_${i}_image`];
 
-    const total = parseFloat(projectsData[`project_${i}_total`] || 0);
-    const current = parseFloat(projectsData[`project_${i}_current`] || 0);
-    const remaining = Math.max(total - current, 0);
+    // Skip empty rows
+    if (
+      !title &&
+      !description &&
+      !status &&
+      !total &&
+      !current &&
+      !image
+    ) {
+      continue;
+    }
+
+    const totalAmount = parseFloat(total || 0);
+    const currentAmount = parseFloat(current || 0);
+    const remaining = Math.max(totalAmount - currentAmount, 0);
 
     projects.push({
-      title,
-      description: projectsData[`project_${i}_description`] || "",
-      image: projectsData[`project_${i}_image`] || "",
-      status: projectsData[`project_${i}_status`] || "",
-      total,
-      current,
+      title: title || "",
+      description: description || "",
+      image: image || "",
+      status: status || "",
+      total: totalAmount,
+      current: currentAmount,
       remaining,
     });
   }
+
+  // Renumber for display (optional)
+  const cleanedProjects = projects.map((p, idx) => ({
+    ...p,
+    index: idx + 1,
+  }));
 
   return (
     <div className="projects-page">
@@ -45,9 +67,13 @@ function Projects() {
       </header>
 
       <section className="projects-grid">
-        {projects.map((p, idx) => (
+        {cleanedProjects.map((p, idx) => (
           <div className="project-card" key={idx}>
-            <img src={`http://localhost:5000/${p.image}`} alt={p.title} />
+            <img
+              src={`http://localhost:5000/${p.image}`}
+              alt={p.title}
+              onError={(e) => (e.target.style.display = "none")}
+            />
             <div className="project-content">
               <h3>{p.title}</h3>
               <ReadMore text={p.description} maxLength={200} />
@@ -69,7 +95,7 @@ function Projects() {
 function ReadMore({ text, maxLength = 200 }) {
   const [expanded, setExpanded] = useState(false);
 
-  if (text.length <= maxLength) return <p>{text}</p>;
+  if (!text || text.length <= maxLength) return <p>{text}</p>;
 
   return (
     <p>

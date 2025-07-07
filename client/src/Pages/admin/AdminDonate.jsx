@@ -3,6 +3,27 @@ import axios from 'axios';
 import '../../styles/AdminHome.css';
 import { FaSun, FaMoon, FaTrash } from 'react-icons/fa';
 
+// ConfirmModal component with className based styling
+function ConfirmModal({ visible, message, onConfirm, onCancel }) {
+  if (!visible) return null;
+
+  return (
+    <div className="confirm-modal-overlay">
+      <div className="confirm-modal-box">
+        <p className="confirm-modal-message">{message}</p>
+        <div className="confirm-modal-buttons">
+          <button className="confirm-modal-yes" onClick={onConfirm}>
+            Yes
+          </button>
+          <button className="confirm-modal-no" onClick={onCancel}>
+            No
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AdminDonate() {
   const [donateContent, setDonateContent] = useState({});
   const [updatedContent, setUpdatedContent] = useState({});
@@ -11,7 +32,12 @@ function AdminDonate() {
   const [darkMode, setDarkMode] = useState(false);
   const [donationProofs, setDonationProofs] = useState([]);
   const [bankAccounts, setBankAccounts] = useState([]);
-  const [expandedReasons, setExpandedReasons] = useState({}); // For readmore/readless toggles
+  const [expandedReasons, setExpandedReasons] = useState({});
+
+  // For confirmation modal
+  const [confirmVisible, setConfirmVisible] = useState(false);
+  const [confirmMessage, setConfirmMessage] = useState('');
+  const [confirmAction, setConfirmAction] = useState(null);
 
   useEffect(() => {
     fetchContent();
@@ -80,7 +106,6 @@ function AdminDonate() {
     setDarkMode(!isDark);
   };
 
-  // General text change handler for dynamic sections
   const handleChange = (section, key, value) => {
     setUpdatedContent((prev) => ({
       ...prev,
@@ -91,7 +116,6 @@ function AdminDonate() {
     }));
   };
 
-  // File change handler for dynamic sections (e.g. images)
   const handleFileChange = (section, key, file) => {
     setUpdatedContent((prev) => ({
       ...prev,
@@ -102,7 +126,6 @@ function AdminDonate() {
     }));
   };
 
-  // Bank accounts change handlers
   const handleBankAccountChange = (index, field, value) => {
     setBankAccounts((prev) => {
       const newAccounts = [...prev];
@@ -126,31 +149,37 @@ function AdminDonate() {
     ]);
   };
 
-  const deleteBankAccount = (index) => {
-    if (window.confirm('Are you sure you want to delete this bank account?')) {
+  // Show confirmation modal before deleting bank account
+  const confirmDeleteBankAccount = (index) => {
+    setConfirmMessage(`Are you sure you want to delete Bank Account #${index + 1}?`);
+    setConfirmAction(() => () => {
       setBankAccounts((prev) => prev.filter((_, i) => i !== index));
-    }
+      setConfirmVisible(false);
+    });
+    setConfirmVisible(true);
   };
 
-  // Delete donation proof from backend
-  const deleteDonationProof = async (key) => {
-    if (!key) return alert('Invalid proof key.');
-    if (!window.confirm('Are you sure you want to delete this donation proof?')) return;
-
-    const token = localStorage.getItem('token');
-    try {
-      await axios.delete(`http://localhost:5000/api/donate/proof/${key}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      alert('Donation proof deleted.');
-      await fetchContent();
-    } catch (err) {
-      console.error(err);
-      alert('Failed to delete donation proof.');
-    }
+  // Show confirmation modal before deleting donation proof
+  const confirmDeleteDonationProof = (key) => {
+    setConfirmMessage('Are you sure you want to delete this donation proof?');
+    setConfirmAction(() => async () => {
+      const token = localStorage.getItem('token');
+      try {
+        await axios.delete(`http://localhost:5000/api/donate/proof/${key}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        alert('Donation proof deleted.');
+        await fetchContent();
+      } catch (err) {
+        console.error(err);
+        alert('Failed to delete donation proof.');
+      } finally {
+        setConfirmVisible(false);
+      }
+    });
+    setConfirmVisible(true);
   };
 
-  // Update general sections (non-bankInfo)
   const handleUpdateSection = async (section) => {
     setUpdating((prev) => ({ ...prev, [section]: true }));
     const token = localStorage.getItem('token');
@@ -183,7 +212,6 @@ function AdminDonate() {
     }
   };
 
-  // Update bank info section
   const handleUpdateBankInfo = async () => {
     setUpdating((prev) => ({ ...prev, bankInfo: true }));
     const token = localStorage.getItem('token');
@@ -305,8 +333,9 @@ function AdminDonate() {
             <h3>Bank Account #{idx + 1}</h3>
             <div style={{ textAlign: 'right' }}>
               <button
-                onClick={() => deleteBankAccount(idx)}
+                onClick={() => confirmDeleteBankAccount(idx)}
                 style={{ color: 'red', border: 'none', background: 'none', cursor: 'pointer' }}
+                title={`Delete Bank Account #${idx + 1}`}
               >
                 <FaTrash /> Delete Bank #{idx + 1}
               </button>
@@ -342,7 +371,6 @@ function AdminDonate() {
                 accept="image/*"
                 onChange={(e) => handleBankAccountFileChange(idx, e.target.files[0])}
               />
-              {/* Show current logo if no new file selected */}
               {account.logo && !account.logoFile && (
                 <div style={{ marginTop: '8px' }}>
                   <small>Current:</small>
@@ -355,7 +383,6 @@ function AdminDonate() {
                   />
                 </div>
               )}
-              {/* Preview new logo file */}
               {account.logoFile && (
                 <div style={{ marginTop: '8px' }}>
                   <small>New Preview:</small>
@@ -384,16 +411,18 @@ function AdminDonate() {
         </button>
       </div>
 
-      {/* Donation Proofs Section (vertical list with readmore/readless) */}
+      {/* Donation Proofs Section */}
       <div className="home-section">
         <h2>Donation Proofs</h2>
         {donationProofs.length === 0 ? (
           <p>No donation proofs submitted yet.</p>
         ) : (
-          donationProofs.map((proof, index) => {
+          donationProofs.map((proof) => {
             const isExpanded = expandedReasons[proof.key] || false;
             const reasonText = proof.reason || '-';
-            const shortReason = reasonText.length > 100 ? reasonText.slice(0, 100) + '...' : reasonText;
+            const shortReason =
+              reasonText.length > 100 ? reasonText.slice(0, 100) + '...' : reasonText;
+
             return (
               <div
                 key={proof.key}
@@ -409,7 +438,7 @@ function AdminDonate() {
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <h3>{proof.name || 'Anonymous Donor'}</h3>
                   <button
-                    onClick={() => deleteDonationProof(proof.key)}
+                    onClick={() => confirmDeleteDonationProof(proof.key)}
                     style={{ color: 'red', border: 'none', background: 'none', cursor: 'pointer' }}
                     title="Delete donation proof"
                   >
@@ -417,7 +446,9 @@ function AdminDonate() {
                   </button>
                 </div>
 
-                <p><strong>Amount (ETB):</strong> {proof.amount || '-'}</p>
+                <p>
+                  <strong>Amount (ETB):</strong> {proof.amount || '-'}
+                </p>
                 <p>
                   <strong>Reason:</strong>{' '}
                   {reasonText.length <= 100 ? (
@@ -441,8 +472,13 @@ function AdminDonate() {
                     </>
                   )}
                 </p>
-                <p><strong>Email:</strong> {proof.email || '-'}</p>
-                <p><strong>Timestamp:</strong> {proof.timestamp ? new Date(proof.timestamp).toLocaleString() : '-'}</p>
+                <p>
+                  <strong>Email:</strong> {proof.email || '-'}
+                </p>
+                <p>
+                  <strong>Timestamp:</strong>{' '}
+                  {proof.timestamp ? new Date(proof.timestamp).toLocaleString() : '-'}
+                </p>
                 {proof.screenshot ? (
                   <a
                     href={`http://localhost:5000${proof.screenshot}`}
@@ -466,6 +502,14 @@ function AdminDonate() {
           })
         )}
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        visible={confirmVisible}
+        message={confirmMessage}
+        onConfirm={confirmAction}
+        onCancel={() => setConfirmVisible(false)}
+      />
     </div>
   );
 }

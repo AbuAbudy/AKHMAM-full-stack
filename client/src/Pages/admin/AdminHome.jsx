@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../styles/AdminHome.css';
-import { FaSun, FaMoon } from 'react-icons/fa'; // 🌗 icon import
+import { FaSun, FaMoon } from 'react-icons/fa';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function AdminHome() {
   const [homeContent, setHomeContent] = useState({});
@@ -17,7 +19,10 @@ function AdminHome() {
         setUpdatedContent(res.data);
         setLoading(false);
       })
-      .catch((err) => console.error('Error fetching home content:', err));
+      .catch((err) => {
+        console.error('Error fetching home content:', err);
+        toast.error('Failed to load home content.');
+      });
 
     const mode = localStorage.getItem('mode') || 'light';
     setDarkMode(mode === 'dark');
@@ -54,15 +59,13 @@ function AdminHome() {
 
   const handleUpdateSection = async (section) => {
     setUpdating(prev => ({ ...prev, [section]: true }));
-
     const token = localStorage.getItem('token');
     const updates = updatedContent[section];
     const formData = new FormData();
     formData.append('section', section);
 
     for (const key in updates) {
-      const value = updates[key];
-      formData.append(key, value);
+      formData.append(key, updates[key]);
     }
 
     try {
@@ -72,10 +75,10 @@ function AdminHome() {
           'Content-Type': 'multipart/form-data'
         }
       });
-      alert(res.data.message || 'Section updated!');
+      toast.success(res.data.message || 'Section updated!');
     } catch (error) {
       console.error(error);
-      alert('Update failed: ' + (error.response?.data?.error || error.message));
+      toast.error('Update failed: ' + (error.response?.data?.error || error.message));
     } finally {
       setUpdating(prev => ({ ...prev, [section]: false }));
     }
@@ -85,6 +88,7 @@ function AdminHome() {
 
   return (
     <div className="admin-home-container">
+      <ToastContainer />
       <button className="night-toggle" onClick={toggleNightMode}>
         {darkMode ? <FaSun /> : <FaMoon />}
       </button>

@@ -300,3 +300,73 @@ body.dark-mode {
 .home-section > div > div:first-child button:hover {
   color: #cc0000;
 }
+
+/* Modal overlay */
+.confirm-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* dark transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal box */
+.confirm-modal-box {
+  background-color: #fff; /* bright white */
+  padding: 24px 30px;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Message text */
+.confirm-modal-message {
+  margin-bottom: 24px;
+  font-size: 1.15rem;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Buttons container */
+.confirm-modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* Yes button */
+.confirm-modal-yes {
+  padding: 10px 20px;
+  background-color: #d9534f; /* bootstrap red */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.confirm-modal-yes:hover {
+  background-color: #c9302c;
+}
+
+/* No button */
+.confirm-modal-no {
+  padding: 10px 20px;
+  background-color: #5bc0de; /* bootstrap cyan */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.confirm-modal-no:hover {
+  background-color: #31b0d5;
+}

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../../styles/AdminHome.css";
 import { FaSun, FaMoon, FaTrash } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function AdminVolunteer() {
   const [volunteerContent, setVolunteerContent] = useState({});
@@ -16,7 +18,6 @@ function AdminVolunteer() {
   useEffect(() => {
     fetchContent();
     fetchApplications();
-
     const mode = localStorage.getItem("mode") || "light";
     setDarkMode(mode === "dark");
     document.body.classList.add(`${mode}-mode`);
@@ -75,16 +76,13 @@ function AdminVolunteer() {
 
   const handleUpdateSection = async (section) => {
     setUpdating((prev) => ({ ...prev, [section]: true }));
-
     const token = localStorage.getItem("token");
     const updates = updatedContent[section];
     const formData = new FormData();
     formData.append("section", section);
-
     for (const key in updates) {
       formData.append(key, updates[key]);
     }
-
     try {
       const res = await axios.put("http://localhost:5000/api/volunteers", formData, {
         headers: {
@@ -92,32 +90,29 @@ function AdminVolunteer() {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      alert(res.data.message || "Section updated!");
+      toast.success(res.data.message || "Section updated!");
       await fetchContent();
     } catch (error) {
       console.error(error);
-      alert("Update failed: " + (error.response?.data?.error || error.message));
+      toast.error("Update failed: " + (error.response?.data?.error || error.message));
     } finally {
       setUpdating((prev) => ({ ...prev, [section]: false }));
     }
   };
 
   const handleDeleteApplication = async (key) => {
-    if (!window.confirm("Are you sure you want to delete this application?")) return;
-
+    toast.info("Deleting application...", { autoClose: 1000 });
     setDeletingKey(key);
-
     try {
       const token = localStorage.getItem("token");
       await axios.delete(`http://localhost:5000/api/volunteers/applications/${key}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      alert("Application deleted successfully.");
+      toast.success("Application deleted successfully.");
       await fetchApplications();
     } catch (error) {
       console.error("Delete failed:", error);
-      alert("Failed to delete application.");
+      toast.error("Failed to delete application.");
     } finally {
       setDeletingKey(null);
     }
@@ -127,61 +122,63 @@ function AdminVolunteer() {
 
   return (
     <div className="admin-home-container">
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
       <button className="night-toggle" onClick={toggleNightMode}>
         {darkMode ? <FaSun /> : <FaMoon />}
       </button>
 
       <h1>Manage Volunteer Page Content</h1>
 
-      {Object.entries(volunteerContent).map(([section, data]) => (
-        <div key={section} className="home-section">
-          <h2>{section.toUpperCase()}</h2>
-
-          {Object.entries(data).map(([key, value]) => (
-            <div key={key} className="field-group">
-              <label>{key}:</label>
-              {key.toLowerCase().includes("image") ? (
-                <>
+      {Object.entries(volunteerContent).map(([section, data]) => {
+        if (section === "application") return null; // ✅ REMOVE 'application' section
+        return (
+          <div key={section} className="home-section">
+            <h2>{section.toUpperCase()}</h2>
+            {Object.entries(data).map(([key, value]) => (
+              <div key={key} className="field-group">
+                <label>{key}:</label>
+                {key.toLowerCase().includes("image") ? (
+                  <>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleFileChange(section, key, e.target.files[0])}
+                    />
+                    {typeof value === "string" && (
+                      <div style={{ marginTop: "8px" }}>
+                        <small>Current:</small>
+                        <br />
+                        <img
+                          src={`http://localhost:5000${value}?t=${Date.now()}`}
+                          alt={key}
+                          width="200"
+                        />
+                      </div>
+                    )}
+                  </>
+                ) : (
                   <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleFileChange(section, key, e.target.files[0])}
+                    type="text"
+                    value={updatedContent[section]?.[key] || ""}
+                    onChange={(e) => handleChange(section, key, e.target.value)}
                   />
-                  {typeof value === "string" && (
-                    <div style={{ marginTop: "8px" }}>
-                      <small>Current:</small>
-                      <br />
-                      <img
-                        src={`http://localhost:5000${value}?t=${Date.now()}`}
-                        alt={key}
-                        width="200"
-                      />
-                    </div>
-                  )}
-                </>
-              ) : (
-                <input
-                  type="text"
-                  value={updatedContent[section]?.[key] || ""}
-                  onChange={(e) => handleChange(section, key, e.target.value)}
-                />
-              )}
-            </div>
-          ))}
+                )}
+              </div>
+            ))}
+            <button
+              className="update-button"
+              onClick={() => handleUpdateSection(section)}
+              disabled={updating[section]}
+            >
+              {updating[section] ? "Updating..." : `Update ${section}`}
+            </button>
+          </div>
+        );
+      })}
 
-          <button
-            className="update-button"
-            onClick={() => handleUpdateSection(section)}
-            disabled={updating[section]}
-          >
-            {updating[section] ? "Updating..." : `Update ${section}`}
-          </button>
-        </div>
-      ))}
-
+      {/* Volunteer Applications Section */}
       <div className="home-section" style={{ marginTop: "2rem" }}>
         <h2>Volunteer Applications</h2>
-
         {loadingApps ? (
           <p>Loading applications...</p>
         ) : applications.length === 0 ? (
@@ -197,7 +194,6 @@ function AdminVolunteer() {
               minute: "2-digit",
               second: "2-digit",
             });
-
             return (
               <div
                 key={app.key}
@@ -218,9 +214,7 @@ function AdminVolunteer() {
                 <p><strong>Email:</strong> {app.email}</p>
                 <p><strong>Phone:</strong> {app.phone}</p>
                 <p><strong>Interest:</strong> {app.interest}</p>
-                <p style={{ wordBreak: "break-word", overflowWrap: "break-word", whiteSpace: "pre-wrap" }}>
-                  <strong>Message:</strong> {app.message || "(No message)"}
-                </p>
+                <p><strong>Message:</strong> {app.message || "(No message)"}</p>
                 <p><strong>Submitted:</strong> {formattedDate}</p>
                 <button
                   onClick={() => handleDeleteApplication(app.key)}

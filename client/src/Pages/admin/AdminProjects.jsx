@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../../styles/AdminHome.css";
 import { FaSun, FaMoon } from "react-icons/fa";
+import "../../styles/AdminHome.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const BACKEND_URL = "http://localhost:5000/";
 
 function AdminProjects() {
   const [hero, setHero] = useState({ title: "", subtitle: "" });
@@ -11,7 +15,6 @@ function AdminProjects() {
 
   useEffect(() => {
     fetchData();
-
     const mode = localStorage.getItem("mode") || "light";
     setDarkMode(mode === "dark");
     document.body.classList.add(`${mode}-mode`);
@@ -33,23 +36,31 @@ function AdminProjects() {
 
       for (let i = 1; i <= 30; i++) {
         const title = rawProjects[`project_${i}_title`];
-        if (!title) break;
+        const description = rawProjects[`project_${i}_description`];
+        const status = rawProjects[`project_${i}_status`];
+        const total = rawProjects[`project_${i}_total`];
+        const current = rawProjects[`project_${i}_current`];
+        const image = rawProjects[`project_${i}_image`];
+
+        const isEmpty =
+          !title && !description && !status && !total && !current && !image;
+        if (isEmpty) continue;
+
         list.push({
           index: i,
-          title,
-          description: rawProjects[`project_${i}_description`] || "",
-          image: rawProjects[`project_${i}_image`] || "",
-          status: rawProjects[`project_${i}_status`] || "Ongoing",
-          total: rawProjects[`project_${i}_total`] || "",
-          current: rawProjects[`project_${i}_current`] || "",
+          title: title || "",
+          description: description || "",
+          status: status || "Ongoing",
+          total: total || "",
+          current: current || "",
+          image: image || "",
           imageFile: null,
         });
       }
 
       setProjects(list);
     } catch (err) {
-      alert("Failed to load project data.");
-      console.error(err);
+      toast.error("❌ Failed to load project data.");
     } finally {
       setLoading(false);
     }
@@ -77,14 +88,11 @@ function AdminProjects() {
           title: hero.title,
           subtitle: hero.subtitle,
         },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert("Hero section saved.");
+      toast.success(" Hero section saved", { autoClose: 2000 });
     } catch (err) {
-      alert("Failed to save hero section.");
-      console.error(err);
+      toast.error("❌ Failed to save hero section");
     }
   };
 
@@ -120,45 +128,90 @@ function AdminProjects() {
           "Content-Type": "multipart/form-data",
         },
       });
-      alert("Project saved.");
+      toast.success(`✅ Project ${p.index} saved successfully`, {
+        position: "bottom-center",
+        autoClose: 2000,
+      });
       fetchData();
     } catch (err) {
-      alert("Failed to save project.");
-      console.error(err);
+      toast.error(`❌ Failed to save project ${p.index}`);
     }
   };
 
-  const deleteProject = async (i) => {
-    if (!window.confirm("Are you sure you want to delete this project?")) return;
+  const confirmDelete = (i) => {
+    toast.dismiss();
 
+    const ConfirmToast = () => (
+      <div style={{ textAlign: "center" }}>
+        <p><strong>🗑️ Delete Project {i}?</strong></p>
+        <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginTop: "10px" }}>
+          <button
+            onClick={() => handleDelete(i)}
+            style={{
+              padding: "6px 12px",
+              backgroundColor: "#d32f2f",
+              color: "#fff",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Yes
+          </button>
+          <button
+            onClick={() => toast.dismiss()}
+            style={{
+              padding: "6px 12px",
+              backgroundColor: "#666",
+              color: "#fff",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+
+    toast.info(<ConfirmToast />, {
+      position: "top-center",
+      autoClose: false,
+      closeButton: false,
+      toastId: "confirm-delete",
+      draggable: false,
+    });
+  };
+
+  const handleDelete = async (i) => {
+    toast.dismiss("confirm-delete");
     const token = localStorage.getItem("token");
-    const keysToClear = [
-      "title",
-      "description",
-      "status",
-      "total",
-      "current",
-      "image",
-    ];
+    const keys = ["title", "description", "status", "total", "current", "image"];
 
     try {
-      for (const key of keysToClear) {
-        await axios.put(
-          "/api/projects",
-          { section: "projects", [`project_${i}_${key}`]: "" },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      }
-      alert("Project deleted.");
+      await Promise.all(
+        keys.map((key) =>
+          axios.put(
+            "/api/projects",
+            { section: "projects", [`project_${i}_${key}`]: "" },
+            { headers: { Authorization: `Bearer ${token}` } }
+          )
+        )
+      );
+      toast.success(`✅ Project ${i} deleted`, { autoClose: 2000 });
       fetchData();
     } catch (err) {
-      alert("Failed to delete project.");
-      console.error(err);
+      toast.error(`❌ Failed to delete project ${i}`);
     }
   };
 
   const addNewProject = () => {
-    const nextIndex = projects.length ? projects[projects.length - 1].index + 1 : 1;
+    const usedIndices = projects.map((p) => p.index);
+    const nextIndex =
+      [...Array(30).keys()].map((n) => n + 1).find((n) => !usedIndices.includes(n)) ||
+      projects.length + 1;
+
     setProjects((prev) => [
       ...prev,
       {
@@ -178,16 +231,16 @@ function AdminProjects() {
 
   return (
     <div className="admin-home-container">
+      <ToastContainer />
       <button className="night-toggle" onClick={toggleMode}>
         {darkMode ? <FaSun /> : <FaMoon />}
       </button>
 
       <h1>Manage Projects Page</h1>
 
-      {/* HERO SECTION */}
+      {/* Hero */}
       <div className="home-section">
         <h2>Hero Section</h2>
-
         <div className="field-group">
           <label>Title:</label>
           <input
@@ -196,7 +249,6 @@ function AdminProjects() {
             onChange={(e) => handleHeroChange("title", e.target.value)}
           />
         </div>
-
         <div className="field-group">
           <label>Subtitle:</label>
           <input
@@ -205,13 +257,10 @@ function AdminProjects() {
             onChange={(e) => handleHeroChange("subtitle", e.target.value)}
           />
         </div>
-
-        <button onClick={saveHero} className="update-button">
-          Save Hero
-        </button>
+        <button onClick={saveHero} className="update-button">Save Hero</button>
       </div>
 
-      {/* PROJECTS */}
+      {/* Projects */}
       {projects.map((p) => (
         <div key={p.index} className="home-section">
           <h2>Project {p.index}</h2>
@@ -274,7 +323,7 @@ function AdminProjects() {
             />
             {p.image && !p.imageFile && (
               <img
-                src={`http://localhost:5000/${p.image}?t=${Date.now()}`}
+                src={`${BACKEND_URL}${p.image}?t=${Date.now()}`}
                 alt={`Project ${p.index}`}
                 width="200"
                 style={{ marginTop: "8px" }}
@@ -294,7 +343,7 @@ function AdminProjects() {
             Save Project
           </button>
           <button
-            onClick={() => deleteProject(p.index)}
+            onClick={() => confirmDelete(p.index)}
             className="update-button"
             style={{ backgroundColor: "#c62828", marginLeft: "10px" }}
           >
@@ -303,7 +352,6 @@ function AdminProjects() {
         </div>
       ))}
 
-      {/* ADD NEW PROJECT BUTTON AT THE END */}
       <div style={{ textAlign: "center", marginTop: "30px" }}>
         <button onClick={addNewProject} className="update-button">
           + Add New Project

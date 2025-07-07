@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../styles/AdminHome.css';
 import { FaSun, FaMoon, FaPlus, FaTrash } from 'react-icons/fa';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function AdminAbout() {
   const [aboutContent, setAboutContent] = useState({});
@@ -27,6 +29,7 @@ function AdminAbout() {
         setLoading(false);
       } catch (err) {
         console.error('Error fetching about content:', err);
+        toast.error('Failed to fetch about content');
       }
     };
 
@@ -45,6 +48,7 @@ function AdminAbout() {
         setLoadingLists(false);
       } catch (err) {
         console.error('Error fetching list items:', err);
+        toast.error('Failed to fetch list items');
       }
     };
 
@@ -86,7 +90,6 @@ function AdminAbout() {
 
   const handleUpdateSection = async (section) => {
     setUpdating(prev => ({ ...prev, [section]: true }));
-
     const token = localStorage.getItem('token');
     const updates = updatedContent[section];
     const formData = new FormData();
@@ -103,10 +106,10 @@ function AdminAbout() {
           'Content-Type': 'multipart/form-data',
         },
       });
-      alert(res.data.message || 'Section updated!');
+      toast.success(res.data.message || 'Section updated!');
     } catch (error) {
       console.error(error);
-      alert('Update failed: ' + (error.response?.data?.error || error.message));
+      toast.error('Update failed: ' + (error.response?.data?.error || error.message));
     } finally {
       setUpdating(prev => ({ ...prev, [section]: false }));
     }
@@ -114,53 +117,90 @@ function AdminAbout() {
 
   const addListItem = async (section) => {
     const token = localStorage.getItem('token');
-    const newValue = prompt('Enter new item text:');
+    const newValue = window.prompt('Enter new item text:');
     if (!newValue) return;
 
     try {
-      await axios.post(
-        `http://localhost:5000/api/about/list/${section}`,
-        { value: newValue },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await axios.post(`http://localhost:5000/api/about/list/${section}`, { value: newValue }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success('Item added');
       await refreshList(section);
     } catch (error) {
-      alert('Failed to add item: ' + (error.response?.data?.error || error.message));
+      toast.error('Failed to add item: ' + (error.response?.data?.error || error.message));
     }
   };
 
   const updateListItem = async (section, id, newValue) => {
-    if (!newValue) return alert('Value cannot be empty');
-    const token = localStorage.getItem('token');
+    if (!newValue) {
+      toast.error('Value cannot be empty');
+      return;
+    }
 
+    const token = localStorage.getItem('token');
     try {
-      await axios.put(
-        `http://localhost:5000/api/about/list/item/${id}`,
-        { value: newValue },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await axios.put(`http://localhost:5000/api/about/list/item/${id}`, { value: newValue }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success('Item updated');
       await refreshList(section);
     } catch (error) {
-      alert('Failed to update item: ' + (error.response?.data?.error || error.message));
+      toast.error('Failed to update item: ' + (error.response?.data?.error || error.message));
     }
   };
 
-  const deleteListItem = async (section, id) => {
-    if (!window.confirm('Are you sure you want to delete this item?')) return;
-    const token = localStorage.getItem('token');
-
-    try {
-      await axios.delete(`http://localhost:5000/api/about/list/item/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      await refreshList(section);
-    } catch (error) {
-      alert('Failed to delete item: ' + (error.response?.data?.error || error.message));
-    }
+  const deleteListItem = (section, id) => {
+    toast.info(
+      ({ closeToast }) => (
+        <div>
+          <p>Are you sure you want to delete this item?</p>
+          <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+            <button
+              onClick={async () => {
+                try {
+                  await axios.delete(`http://localhost:5000/api/about/list/item/${id}`, {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+                  });
+                  toast.success('Item deleted');
+                  await refreshList(section);
+                  closeToast();
+                } catch (error) {
+                  toast.error('Failed to delete item: ' + (error.response?.data?.error || error.message));
+                }
+              }}
+              style={{
+                padding: '5px 10px',
+                backgroundColor: '#d9534f',
+                color: 'white',
+                border: 'none',
+                borderRadius: '3px',
+                cursor: 'pointer',
+              }}
+            >
+              Yes
+            </button>
+            <button
+              onClick={closeToast}
+              style={{
+                padding: '5px 10px',
+                backgroundColor: '#6c757d',
+                color: 'white',
+                border: 'none',
+                borderRadius: '3px',
+                cursor: 'pointer',
+              }}
+            >
+              No
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
+      }
+    );
   };
 
   const refreshList = async (section) => {
@@ -168,7 +208,6 @@ function AdminAbout() {
       const res = await axios.get(`http://localhost:5000/api/about/list/${section}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
-
       if (section === 'whatWeDo') setWhatWeDoList(res.data);
       else if (section === 'coreValues') setCoreValuesList(res.data);
     } catch (err) {
@@ -180,6 +219,7 @@ function AdminAbout() {
 
   return (
     <div className="admin-home-container">
+      <ToastContainer />
       <button className="night-toggle" onClick={toggleNightMode}>
         {darkMode ? <FaSun /> : <FaMoon />}
       </button>
@@ -279,7 +319,7 @@ function ListItemEditor({ id, section, value, onUpdate, onDelete }) {
 
   const handleBlur = async () => {
     if (text.trim() === '') {
-      alert('Value cannot be empty.');
+      toast.error('Value cannot be empty.');
       setText(value);
       return;
     }
