@@ -106,3 +106,65 @@
     letter-spacing: 1.5px;
     text-transform: uppercase;
   }
+
+  /* === DARK MODE STYLES FOR CONTACT PAGE === */
+body.dark-mode .contact-container {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+}
+
+body.dark-mode .contact-title {
+  background: linear-gradient(90deg, #009688, #4db6ac);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .intro-text {
+  color: #bbb;
+}
+
+body.dark-mode .contact-form-section h2,
+body.dark-mode .contact-info h2 {
+  color: #fff;
+}
+
+body.dark-mode .contact-form input,
+body.dark-mode .contact-form textarea {
+  background-color: #2b2b2b;
+  border-color: #555;
+  color: #f0f0f0;
+}
+
+body.dark-mode .contact-form input::placeholder,
+body.dark-mode .contact-form textarea::placeholder {
+  color: #aaa;
+}
+
+body.dark-mode .contact-form button {
+  background-color: #26a69a;
+  color: #fff;
+}
+
+body.dark-mode .contact-form button:hover {
+  background-color: #00796b;
+}
+
+body.dark-mode .contact-info p {
+  color: #ccc;
+}
+
+body.dark-mode .social-links h3 {
+  color: #f0f0f0;
+}
+
+body.dark-mode .social-links .icons a {
+  color: #4db6ac;
+}
+
+body.dark-mode .social-links .icons a:hover {
+  color: #80cbc4;
+}
+
+body.dark-mode .status-message {
+  color: #81c784;
+}

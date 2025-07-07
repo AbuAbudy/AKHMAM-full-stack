@@ -1,18 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Navbar.css';
+import { FaSun, FaMoon } from 'react-icons/fa';
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
 
-  // Toggle menu open/close
+  // Load mode from localStorage
+  useEffect(() => {
+    const mode = localStorage.getItem('mode') || 'light';
+    setDarkMode(mode === 'dark');
+    document.body.classList.toggle('dark-mode', mode === 'dark');
+  }, []);
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Close menu when a link is clicked
   const closeMenu = () => {
     setIsMenuOpen(false);
+  };
+
+  const toggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    document.body.classList.toggle('dark-mode', newMode);
+    localStorage.setItem('mode', newMode ? 'dark' : 'light');
   };
 
   return (
@@ -27,8 +41,13 @@ function Navbar() {
         <li><Link to="/blog" onClick={closeMenu}>Blog</Link></li>
         <li><Link to="/contact" onClick={closeMenu}>Contact</Link></li>
       </ul>
-      <div className={`hamburger ${isMenuOpen ? 'open' : ''}`} onClick={toggleMenu}>
-        ☰
+      <div className="navbar-actions">
+        <button onClick={toggleDarkMode} className="dark-mode-toggle" aria-label="Toggle Dark Mode">
+          {darkMode ? <FaSun /> : <FaMoon />}
+        </button>
+        <div className={`hamburger ${isMenuOpen ? 'open' : ''}`} onClick={toggleMenu}>
+          ☰
+        </div>
       </div>
     </nav>
   );

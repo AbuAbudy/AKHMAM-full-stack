@@ -91,3 +91,36 @@
     text-align: center;
   }
 }
+
+body.dark-mode .footer {
+  background-color: #002200;
+  color: #ccc;
+}
+
+body.dark-mode .footer-brand p,
+body.dark-mode .footer-links ul li a,
+body.dark-mode .footer-contact p,
+body.dark-mode .footer-bottom p {
+  color: #ccc;
+}
+
+body.dark-mode .footer-links h3,
+body.dark-mode .footer-contact h3 {
+  color: #bada55;
+}
+
+body.dark-mode .footer-links ul li a:hover {
+  color: #ffd700;
+}
+
+body.dark-mode .social-icons a {
+  color: #ccc;
+}
+
+body.dark-mode .social-icons a:hover {
+  color: #ffd700;
+}
+
+body.dark-mode .footer-bottom {
+  border-top: 1px solid rgba(186, 218, 85, 0.5);
+}

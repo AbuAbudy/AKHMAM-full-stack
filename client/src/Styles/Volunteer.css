@@ -187,3 +187,88 @@
     font-size: 1rem;
     width: 100%;
   }
+
+  /* === DARK MODE STYLES === */
+body.dark-mode .volunteer-page {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+/* Hero Section */
+body.dark-mode .volunteer-hero .overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .volunteer-hero h1,
+body.dark-mode .volunteer-hero p {
+  color: #fff;
+}
+
+/* Stats Section */
+body.dark-mode .volunteer-stats {
+  background-color: #1e1e1e;
+}
+
+body.dark-mode .volunteer-stats .stat h3,
+body.dark-mode .volunteer-stats .stat p {
+  color: #e0e0e0;
+}
+
+/* Highlights Section */
+body.dark-mode .volunteer-highlights {
+  background-color: #181818;
+}
+
+body.dark-mode .volunteer-highlights .highlight {
+  background-color: #242424;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .volunteer-highlights .icon {
+  color: #4fd1c5;
+}
+
+/* Story Section */
+body.dark-mode .volunteer-story {
+  background-color: #1c1c1c;
+}
+
+body.dark-mode .volunteer-story h2 {
+  color: #4fd1c5;
+}
+
+body.dark-mode .volunteer-story p {
+  color: #ddd;
+}
+
+/* Form Section */
+body.dark-mode .volunteer-form-section {
+  background-color: #171717;
+}
+
+body.dark-mode .volunteer-form {
+  background-color: #222;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .form-group label {
+  color: #ccc;
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group textarea,
+body.dark-mode .volunteer-form select {
+  background-color: #2c2c2c;
+  border: 1px solid #444;
+  color: #eee;
+}
+
+/* Submit Button */
+body.dark-mode button[type="submit"] {
+  background-color: #4fd1c5;
+  color: #1a1a1a;
+}
+
+body.dark-mode button[type="submit"]:hover {
+  background-color: #38b2ac;
+}

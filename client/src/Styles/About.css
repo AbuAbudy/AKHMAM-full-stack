@@ -188,3 +188,93 @@
 .about-cta button:hover {
   background-color: #e0f2f1;
 }
+
+/* === DARK MODE STYLES === */
+body.dark-mode {
+  background-color: #121212;
+  color: #ddd;
+}
+
+body.dark-mode .about-page {
+  color: #ddd;
+}
+
+/* Hero Section */
+body.dark-mode .hero-section::before {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0.7) 50%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
+}
+
+/* Mission & Vision */
+body.dark-mode .mission-vision {
+  background-color: #1e1e1e;
+}
+
+body.dark-mode .mission h2,
+body.dark-mode .vision h2 {
+  color: #4fd1c5;
+}
+
+/* What We Do */
+body.dark-mode .what-we-do {
+  background-color: #1a1a1a;
+}
+
+body.dark-mode .what-we-do h2 {
+  color: #4fd1c5;
+}
+
+body.dark-mode .what-we-do li {
+  color: #ccc;
+}
+
+/* Core Values */
+body.dark-mode .core-values {
+  background-color: #181818;
+}
+
+body.dark-mode .core-values h2 {
+  color: #4fd1c5;
+}
+
+body.dark-mode .value-card {
+  background-color: #2b2b2b;
+  color: #eee;
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .value-card:hover {
+  background-color: #3a3a3a;
+}
+
+/* Our Story */
+body.dark-mode .our-story {
+  background-color: #1b1b1b;
+}
+
+body.dark-mode .our-story h2 {
+  color: #4fd1c5;
+}
+
+/* Call to Action */
+body.dark-mode .about-cta {
+  background-color: #0f4c4c;
+  color: white;
+}
+
+body.dark-mode .about-cta h2 {
+  color: white;
+}
+
+body.dark-mode .about-cta button {
+  background-color: #eee;
+  color: #0f4c4c;
+}
+
+body.dark-mode .about-cta button:hover {
+  background-color: #d6f5f5;
+}

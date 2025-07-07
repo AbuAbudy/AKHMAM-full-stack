@@ -369,3 +369,101 @@ body.dark-mode .add-item-button {
 body.dark-mode .add-item-button:hover {
   background-color: var(--btn-hover-dark);
 }
+
+body.dark-mode .home {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+body.dark-mode .hero {
+  color: #f9b234;
+  /* Keep background overlay as is or tweak */
+}
+
+body.dark-mode .hero p {
+  color: #f0e68c;
+}
+
+body.dark-mode .hero button {
+  background-color: #f9b234;
+  color: #121212;
+}
+
+body.dark-mode .hero button:hover {
+  background-color: #ffd633;
+}
+
+/* Section Titles */
+body.dark-mode .about-preview h2,
+body.dark-mode .projects-preview h2,
+body.dark-mode .help-options h2 {
+  color: #bada55;
+}
+
+body.dark-mode .about-preview h2::after,
+body.dark-mode .projects-preview h2::after {
+  background-color: #aacc33;
+}
+
+/* Preview Cards */
+body.dark-mode .preview-card {
+  background-color: #222;
+  border-color: #444;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+}
+
+body.dark-mode .preview-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85);
+}
+
+body.dark-mode .preview-card h3 {
+  color: #aada44;
+}
+
+body.dark-mode .preview-card .preview-text {
+  color: #ccc;
+}
+
+/* Read More Button */
+body.dark-mode .read-more {
+  color: #aada44;
+}
+
+body.dark-mode .read-more:hover {
+  color: #88bb33;
+}
+
+/* Quran Quote */
+body.dark-mode .quran-quote {
+  background-color: #333;
+  color: #ccc;
+  border-left-color: #aada44;
+}
+
+/* Help Options */
+body.dark-mode .help-options {
+  background-color: #1a1a1a;
+}
+
+body.dark-mode .help-card {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
+}
+
+body.dark-mode .card-content {
+  background: rgba(50, 66, 7, 0.0);
+  color: #d4d4aa;
+}
+
+body.dark-mode .card-content h3,
+body.dark-mode .card-content p {
+  color: #bada55;
+}
+
+body.dark-mode .card-content button {
+  background-color: #ffd700;
+  color: #004225;
+}
+
+body.dark-mode .card-content button:hover {
+  background-color: #e6c200;
+}
