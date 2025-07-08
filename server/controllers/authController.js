@@ -1,41 +1,93 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/user'); // Adjust path if needed
 require('dotenv').config();
 
+// TEMPORARY in-memory store for reset tokens (replace with DB or Redis in production)
+const resetTokens = new Map();
+
+// ✅ LOGIN CONTROLLER
 const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Find user by email
     const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // Create JWT token payload
     const payload = {
       id: user.id,
       email: user.email,
       isAdmin: user.isAdmin,
     };
 
-    // Sign token (use your secret from .env)
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-    // Send token and user info back
     res.json({ token, user: payload });
-
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
-module.exports = { login };
+// ✅ FORGOT PASSWORD
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ where: { email } });
+    if (!user || !user.isAdmin) {
+      return res.status(404).json({ message: 'Admin user not found' });
+    }
+
+    const token = crypto.randomBytes(20).toString('hex');
+    resetTokens.set(token, user.id);
+
+    // Expire token after 10 minutes
+    setTimeout(() => resetTokens.delete(token), 10 * 60 * 1000);
+
+    // Normally, you'd email this. For now, return it directly.
+    res.json({ message: 'Reset token generated', token });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// ✅ RESET PASSWORD
+const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    const userId = resetTokens.get(token);
+    if (!userId) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await user.update({ password: hashed });
+
+    resetTokens.delete(token);
+    res.json({ message: 'Password reset successful' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = {
+  login,
+  forgotPassword,
+  resetPassword,
+};

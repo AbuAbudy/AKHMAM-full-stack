@@ -1,30 +1,108 @@
 .admin-login-container {
   max-width: 400px;
-  margin: 80px auto;
-  padding: 20px;
+  margin: 100px auto;
+  padding: 30px 25px;
   border: 1px solid #ddd;
-  border-radius: 10px;
+  border-radius: 12px;
   background-color: #fff;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.admin-login-container.dark {
+  background-color: #1e1e1e;
+  border-color: #333;
+  color: #f0f0f0;
+}
+
+.admin-login-container h2 {
+  margin-bottom: 25px;
+  color: #1d72b8;
+  font-weight: 600;
+  font-size: 24px;
 }
 
 .admin-login-form input {
   display: block;
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
+  padding: 12px 10px;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.admin-login-container.dark .admin-login-form input {
+  background-color: #2b2b2b;
+  color: #f0f0f0;
+  border-color: #555;
 }
 
 .admin-login-form button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background-color: #1d72b8;
   color: white;
   border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.admin-login-form button:hover {
+  background-color: #155d96;
 }
 
 .login-error {
   color: red;
+  font-size: 14px;
   margin-top: 10px;
+}
+
+.forgot-password-link {
+  color: #1d72b8;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 14px;
+  text-decoration: underline;
+  text-align: center;
+}
+
+.forgot-password-link:hover {
+  color: #155d96;
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  padding-right: 40px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+}
+
+.admin-login-container.dark .password-toggle {
+  color: #ccc;
+}
+
+/* Make react-toastify toast text selectable */
+.Toastify__toast-body {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+}
+.Toastify__toast-body {
+  user-select: text !important;
 }
