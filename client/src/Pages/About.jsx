@@ -7,7 +7,7 @@ function About() {
   const [content, setContent] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/about')
+    axios.get(`${import.meta.env.VITE_API_URL}/api/about`)
       .then(res => setContent(res.data))
       .catch(err => console.error('Error fetching about data:', err));
   }, []);
@@ -36,7 +36,7 @@ function About() {
   <div
     className="hero-section"
     style={{
-      backgroundImage: `url(http://localhost:5000/${hero.background_image.replace('assets/', '')})`,
+      backgroundImage: `url(${import.meta.env.VITE_API_URL}/${hero.background_image.replace('assets/', '')})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       padding: '100px 20px',

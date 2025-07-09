@@ -2,12 +2,12 @@ import { Routes, Route } from 'react-router-dom';
 import ScrollToTop from './Utils/ScrollToTop';
 import { ToastContainer } from 'react-toastify';
 import Layout from './components/Layout';
-import Home from './pages/Home';
-import About from './pages/About';
-import Donate from './pages/Donate';
+import Home from './Pages/Home';
+import About from './Pages/About';
+import Donate from './Pages/Donate';
 import Volunteer from './Pages/Volunteer';
 import Projects from './pages/Projects';
-import Blog from './pages/Blog';
+import Blog from './Pages/Blog';
 import Contact from './Pages/Contact';
 
 

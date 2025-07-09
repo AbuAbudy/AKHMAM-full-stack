@@ -33,7 +33,7 @@ function AdminLogin() {
     e.preventDefault();
     setError('');
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, { email, password });
       const { token, user } = res.data;
       if (user.isAdmin) {
         localStorage.setItem('token', token);
@@ -53,7 +53,7 @@ function AdminLogin() {
   // ✅ SEND RESET TOKEN
   const handleSendToken = async () => {
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/forgot-password', { email });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/forgot-password`, { email });
       const token = res.data.token;
 
       toast.info(
@@ -85,7 +85,7 @@ function AdminLogin() {
   // ✅ RESET PASSWORD
   const handleResetPassword = async () => {
     try {
-      await axios.post('http://localhost:5000/api/auth/reset-password', {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/reset-password`, {
         token: resetToken,
         newPassword,
       });

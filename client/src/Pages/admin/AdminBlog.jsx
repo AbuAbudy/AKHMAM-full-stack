@@ -83,7 +83,7 @@ function AdminBlog() {
       title: post.title,
       description: post.description,
       image: null,
-      preview: post.image ? `http://localhost:5000/${post.image}` : "",
+      preview: post.image ? `${import.meta.env.VITE_API_URL}/${post.image}` : "",
       tags: Array.isArray(post.tags) ? post.tags.join(", ") : "",
       category: post.category || "",
     });
@@ -242,12 +242,12 @@ function AdminBlog() {
             <div key={post.id} className="admin-item">
               {post.image && (
                 <img
-                  src={`http://localhost:5000/${post.image}`}
+                  src={`${import.meta.env.VITE_API_URL}/${post.image}`}
                   alt={post.title}
                   className="post-image"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = "http://localhost:5000/assets/uploads/default.jpg";
+                    e.target.src = "`${import.meta.env.VITE_API_URL}/assets/uploads/default.jpg";
                   }}
                 />
               )}

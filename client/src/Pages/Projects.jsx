@@ -70,7 +70,7 @@ function Projects() {
         {cleanedProjects.map((p, idx) => (
           <div className="project-card" key={idx}>
             <img
-              src={`http://localhost:5000/${p.image}`}
+              src={`${import.meta.env.VITE_API_URL}/${p.image}`}
               alt={p.title}
               onError={(e) => (e.target.style.display = "none")}
             />

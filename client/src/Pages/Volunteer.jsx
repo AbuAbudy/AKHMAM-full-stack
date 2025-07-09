@@ -23,7 +23,7 @@ function Volunteer() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/volunteers")
+      .get("${import.meta.env.VITE_API_URL}/api/volunteers")
       .then((res) => setContent(res.data))
       .catch((err) => console.error("Error fetching volunteer content", err));
   }, []);
@@ -35,7 +35,7 @@ function Volunteer() {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/volunteers/apply",
+        "${import.meta.env.VITE_API_URL}/api/volunteers/apply",
         formData
       );
       toast.success(res.data.message || "Submitted successfully!");
@@ -63,7 +63,7 @@ function Volunteer() {
           className="volunteer-hero"
           style={{
             backgroundImage: content.hero.background_image
-              ? `url(http://localhost:5000${content.hero.background_image}?v=${Date.now()})`
+              ? `url(${import.meta.env.VITE_API_URL}${content.hero.background_image}?v=${Date.now()})`
               : "none",
           }}
         >

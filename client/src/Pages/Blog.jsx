@@ -176,7 +176,7 @@ function Blog() {
       ) : (
         posts.map(post => (
           <div key={post.id} className="blog-post" id={`post-${post.id}`}>
-            <img src={`http://localhost:5000/${post.image}`} alt={post.title} className="post-image" />
+            <img src={`${import.meta.env.VITE_API_URL}/${post.image}`} alt={post.title} className="post-image" />
             <div className="post-content">
               <h2>{post.title}</h2>
               <p>{post.description}</p>

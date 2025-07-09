@@ -21,7 +21,7 @@ function AdminContact() {
 
   const fetchContent = () => {
     axios
-      .get("http://localhost:5000/api/contact")
+      .get("`${import.meta.env.VITE_API_URL}/api/contact")
       .then((res) => {
         setContactContent(res.data);
         setUpdatedContent(res.data);
@@ -57,7 +57,7 @@ function AdminContact() {
 
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/contact/${section}`,
+        `${import.meta.env.VITE_API_URL}/api/contact/${section}`,
         updatedContent[section],
         {
           headers: {
@@ -81,7 +81,7 @@ function AdminContact() {
   const handleDelete = async (key) => {
     toast.info("Deleting message...");
     try {
-      await axios.delete(`http://localhost:5000/api/contact/message/${key}`);
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/contact/message/${key}`);
       toast.success("Message deleted");
       fetchContent();
     } catch (error) {

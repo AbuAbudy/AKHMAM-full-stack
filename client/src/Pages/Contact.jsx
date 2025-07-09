@@ -14,7 +14,7 @@ function Contact() {
   });
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/contact')
+    axios.get(`${import.meta.env.VITE_API_URL}/api/contact`)
       .then((res) => setContent(res.data))
       .catch((err) => console.error('Error loading contact content:', err));
   }, []);
@@ -26,7 +26,7 @@ function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/contact/message', form);
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/contact/message`, form);
       toast.success('Message sent successfully!');
       setForm({ fullName: '', email: '', subject: '', message: '' });
     } catch (err) {

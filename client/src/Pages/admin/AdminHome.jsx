@@ -13,7 +13,7 @@ function AdminHome() {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/home')
+    axios.get(`${import.meta.env.VITE_API_URL}/api/home`)
       .then((res) => {
         setHomeContent(res.data);
         setUpdatedContent(res.data);
@@ -69,7 +69,7 @@ function AdminHome() {
     }
 
     try {
-      const res = await axios.put('http://localhost:5000/api/home', formData, {
+      const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/home`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
@@ -112,7 +112,7 @@ function AdminHome() {
                   {value && typeof value === 'string' && (
                     <div style={{ marginTop: '8px' }}>
                       <small>Current:</small><br />
-                      <img src={`http://localhost:5000/${value}`} alt={key} width="200" />
+                      <img src={`${import.meta.env.VITE_API_URL}/${value}`} alt={key} width="200" />
                     </div>
                   )}
                 </>

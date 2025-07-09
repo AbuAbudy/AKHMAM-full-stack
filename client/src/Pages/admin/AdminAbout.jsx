@@ -21,7 +21,7 @@ function AdminAbout() {
 
     const fetchContent = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/about', {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/about`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAboutContent(res.data);
@@ -36,10 +36,10 @@ function AdminAbout() {
     const fetchLists = async () => {
       try {
         const [whatRes, coreRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/about/list/whatWeDo', {
+          axios.get(`${import.meta.env.VITE_API_URL}/api/about/list/whatWeDo`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get('http://localhost:5000/api/about/list/coreValues', {
+          axios.get(`${import.meta.env.VITE_API_URL}/api/about/list/coreValues`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -100,7 +100,7 @@ function AdminAbout() {
     }
 
     try {
-      const res = await axios.put('http://localhost:5000/api/about', formData, {
+      const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/about`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
@@ -121,7 +121,7 @@ function AdminAbout() {
     if (!newValue) return;
 
     try {
-      await axios.post(`http://localhost:5000/api/about/list/${section}`, { value: newValue }, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/about/list/${section}`, { value: newValue }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success('Item added');
@@ -139,7 +139,7 @@ function AdminAbout() {
 
     const token = localStorage.getItem('token');
     try {
-      await axios.put(`http://localhost:5000/api/about/list/item/${id}`, { value: newValue }, {
+      await axios.put(`${import.meta.env.VITE_API_URL}/api/about/list/item/${id}`, { value: newValue }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success('Item updated');
@@ -158,7 +158,7 @@ function AdminAbout() {
             <button
               onClick={async () => {
                 try {
-                  await axios.delete(`http://localhost:5000/api/about/list/item/${id}`, {
+                  await axios.delete(`${import.meta.env.VITE_API_URL}/api/about/list/item/${id}`, {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
                   });
                   toast.success('Item deleted');
@@ -205,7 +205,7 @@ function AdminAbout() {
 
   const refreshList = async (section) => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/about/list/${section}`, {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/about/list/${section}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       if (section === 'whatWeDo') setWhatWeDoList(res.data);
@@ -245,7 +245,7 @@ function AdminAbout() {
                     {value && typeof value === 'string' && (
                       <div style={{ marginTop: '8px' }}>
                         <small>Current:</small><br />
-                        <img src={`http://localhost:5000/${value}`} alt={key} width="200" />
+                        <img src={`${import.meta.env.VITE_API_URL}/${value}`} alt={key} width="200" />
                       </div>
                     )}
                   </>

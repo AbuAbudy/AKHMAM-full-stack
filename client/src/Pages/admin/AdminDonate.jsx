@@ -48,7 +48,7 @@ function AdminDonate() {
 
   const fetchContent = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/donate');
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/donate`);
       const data = res.data;
       setDonateContent(data);
       setUpdatedContent(data);
@@ -165,7 +165,7 @@ function AdminDonate() {
     setConfirmAction(() => async () => {
       const token = localStorage.getItem('token');
       try {
-        await axios.delete(`http://localhost:5000/api/donate/proof/${key}`, {
+        await axios.delete(`${import.meta.env.VITE_API_URL}/api/donate/proof/${key}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         alert('Donation proof deleted.');
@@ -196,7 +196,7 @@ function AdminDonate() {
     });
 
     try {
-      const res = await axios.put('http://localhost:5000/api/donate', formData, {
+      const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/donate`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
@@ -234,7 +234,7 @@ function AdminDonate() {
     });
 
     try {
-      const res = await axios.put('http://localhost:5000/api/donate', formData, {
+      const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/donate`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
@@ -288,7 +288,7 @@ function AdminDonate() {
                         <small>Current:</small>
                         <br />
                         <img
-                          src={`http://localhost:5000${value}?v=${Date.now()}`}
+                          src={`${import.meta.env.VITE_API_URL}${value}?v=${Date.now()}`}
                           alt={key}
                           width="200"
                           style={{ borderRadius: '6px', border: '1px solid #ccc' }}
@@ -376,7 +376,7 @@ function AdminDonate() {
                   <small>Current:</small>
                   <br />
                   <img
-                    src={`http://localhost:5000${account.logo}?v=${Date.now()}`}
+                    src={`${import.meta.env.VITE_API_URL}${account.logo}?v=${Date.now()}`}
                     alt={`Bank ${idx + 1} logo`}
                     width="150"
                     style={{ borderRadius: '6px', border: '1px solid #ccc' }}
@@ -481,14 +481,14 @@ function AdminDonate() {
                 </p>
                 {proof.screenshot ? (
                   <a
-                    href={`http://localhost:5000${proof.screenshot}`}
+                    href={`${import.meta.env.VITE_API_URL}${proof.screenshot}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     title="Click to view full image"
                     style={{ display: 'inline-block', marginTop: '10px' }}
                   >
                     <img
-                      src={`http://localhost:5000${proof.screenshot}?v=${Date.now()}`}
+                      src={`${import.meta.env.VITE_API_URL}${proof.screenshot}?v=${Date.now()}`}
                       alt="Proof Screenshot"
                       width="200"
                       style={{ borderRadius: '6px', border: '1px solid #ccc', cursor: 'pointer' }}

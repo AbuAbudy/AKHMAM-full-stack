@@ -17,7 +17,7 @@ function Donate() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/donate')
+    axios.get(`${import.meta.env.VITE_API_URL}/api/donate`)
       .then(res => {
         setDonateData(res.data);
         setLoading(false);
@@ -53,7 +53,7 @@ function Donate() {
     });
 
     try {
-      const res = await axios.post('http://localhost:5000/api/donate/submit-proof', postData, {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/donate/submit-proof`, postData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       toast.success(res.data.message);
@@ -89,7 +89,7 @@ function Donate() {
       <section
         className="donate-hero"
         style={{
-          backgroundImage: `url(http://localhost:5000${hero.background_image}?v=${Date.now()})`
+          backgroundImage: `url(${import.meta.env.VITE_API_URL}${hero.background_image}?v=${Date.now()})`
         }}
       >
         <h1>{hero.title}</h1>
@@ -104,7 +104,7 @@ function Donate() {
             <li key={id}>
               {bank.logo && (
                 <img
-                  src={`http://localhost:5000${bank.logo}?v=${Date.now()}`}
+                  src={`${import.meta.env.VITE_API_URL}${bank.logo}?v=${Date.now()}`}
                   alt={bank.name}
                   width={60}
                 />

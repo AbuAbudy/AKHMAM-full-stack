@@ -7,7 +7,7 @@ function Home() {
   const [expandedCard, setExpandedCard] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/home')
+    fetch(`${import.meta.env.VITE_API_URL}/api/home`)
       .then(res => res.json())
       .then(data => setContent(data))
       .catch(err => console.error('Error fetching home data:', err));
@@ -17,7 +17,7 @@ function Home() {
     setExpandedCard(expandedCard === index ? null : index);
   };
 
-  const getImageUrl = (path) => path ? `http://localhost:5000/${path}` : '';
+  const getImageUrl = (path) => path ? `${import.meta.env.VITE_API_URL}/${path}` : '';
 
   if (!content) return <p>Loading...</p>;
 

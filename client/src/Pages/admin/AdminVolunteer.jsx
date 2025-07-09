@@ -25,7 +25,7 @@ function AdminVolunteer() {
 
   const fetchContent = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/volunteers");
+      const res = await axios.get("${import.meta.env.VITE_API_URL}/api/volunteers");
       setVolunteerContent(res.data);
       setUpdatedContent(res.data);
       setLoading(false);
@@ -37,7 +37,7 @@ function AdminVolunteer() {
   const fetchApplications = async () => {
     try {
       setLoadingApps(true);
-      const res = await axios.get("http://localhost:5000/api/volunteers/applications");
+      const res = await axios.get("${import.meta.env.VITE_API_URL}/api/volunteers/applications");
       setApplications(res.data);
     } catch (err) {
       console.error("Error fetching applications:", err);
@@ -84,7 +84,7 @@ function AdminVolunteer() {
       formData.append(key, updates[key]);
     }
     try {
-      const res = await axios.put("http://localhost:5000/api/volunteers", formData, {
+      const res = await axios.put("${import.meta.env.VITE_API_URL}/api/volunteers", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -105,7 +105,7 @@ function AdminVolunteer() {
     setDeletingKey(key);
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/volunteers/applications/${key}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/volunteers/applications/${key}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Application deleted successfully.");
@@ -130,7 +130,7 @@ function AdminVolunteer() {
       <h1>Manage Volunteer Page Content</h1>
 
       {Object.entries(volunteerContent).map(([section, data]) => {
-        if (section === "application") return null; // ✅ REMOVE 'application' section
+        if (section === "application") return null; 
         return (
           <div key={section} className="home-section">
             <h2>{section.toUpperCase()}</h2>
@@ -149,7 +149,7 @@ function AdminVolunteer() {
                         <small>Current:</small>
                         <br />
                         <img
-                          src={`http://localhost:5000${value}?t=${Date.now()}`}
+                          src={`${import.meta.env.VITE_API_URL}${value}?t=${Date.now()}`}
                           alt={key}
                           width="200"
                         />
