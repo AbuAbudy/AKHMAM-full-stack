@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaSun, FaMoon } from "react-icons/fa";
-import "../../styles/AdminHome.css";
+import "../../Styles/AdminHome.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import '../styles/Navbar.css';
+import '../Styles/Navbar.css';
 import { FaSun, FaMoon } from 'react-icons/fa';
 
 function Navbar() {

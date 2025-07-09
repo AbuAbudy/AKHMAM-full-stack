@@ -4,7 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaSun, FaMoon, FaTrash, FaEdit } from "react-icons/fa";
 import Loader from "../../components/Loader";
-import "../../styles/AdminBlog.css";
+import "../../Styles/AdminBlog.css";
 
 function AdminBlog() {
   const [posts, setPosts] = useState([]);
