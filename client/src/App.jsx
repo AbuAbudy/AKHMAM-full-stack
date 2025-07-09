@@ -6,7 +6,7 @@ import Home from './Pages/Home';
 import About from './Pages/About';
 import Donate from './Pages/Donate';
 import Volunteer from './Pages/Volunteer';
-import Projects from './pages/Projects';
+import Projects from './Pages/Projects';
 import Blog from './Pages/Blog';
 import Contact from './Pages/Contact';
 
