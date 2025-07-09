@@ -9,7 +9,7 @@ import {
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "../styles/Volunteer.css";
+import "../Styles/Volunteer.css";
 
 function Volunteer() {
   const [content, setContent] = useState(null);

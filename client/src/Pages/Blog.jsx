@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../styles/Blog.css';
+import '../Styles/Blog.css';
 import {
   FaHeart, FaRegHeart, FaComment, FaShareAlt,
   FaFacebook, FaTwitter, FaWhatsapp, FaTelegram, FaCopy

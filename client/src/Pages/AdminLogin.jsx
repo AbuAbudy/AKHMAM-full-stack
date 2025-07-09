@@ -6,7 +6,7 @@ import Footer from '../components/Footer';
 import { FaEye, FaEyeSlash, FaCopy } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import '../styles/AdminLogin.css';
+import '../Styles/AdminLogin.css';
 
 function AdminLogin() {
   const navigate = useNavigate();
