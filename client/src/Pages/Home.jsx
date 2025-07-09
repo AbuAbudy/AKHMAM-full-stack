@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../Styles/home.css';
+import '../Styles/Home.css';
 
 function Home() {
   const [content, setContent] = useState(null);
