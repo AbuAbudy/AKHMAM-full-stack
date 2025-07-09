@@ -1,6 +1,6 @@
 const path = require('path');
 const { Op, Sequelize } = require('sequelize');
-const BlogContent = require('../models/BlogContent');
+const BlogContent = require('../models/blogContent');
 
 // GET all blog posts with pagination, search, filter
 const getAllPosts = async (req, res) => {
