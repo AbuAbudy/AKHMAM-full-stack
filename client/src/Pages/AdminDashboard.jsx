@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/AdminDashboard.css';
+import "../Styles/AdminDashboard.css";
 
 function AdminDashboard() {
   const [theme, setTheme] = useState('light');
