@@ -1,7 +1,9 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
+const pathModule = require('path');
 const sequelize = require('./config/database');
 
 // Routes
@@ -28,10 +30,10 @@ app.use(cors({
 app.use(express.json());
 
 // ✅ Serve all static files under public/assets
-app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
+app.use('/assets', express.static(pathModule.join(__dirname, 'public/assets')));
 app.use(express.static('public'));
-app.use("/assets/uploads", express.static(path.join(__dirname, "public/assets/uploads")));
-app.use('/assets/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use("/assets/uploads", express.static(pathModule.join(__dirname, "public/assets/uploads")));
+app.use('/assets/uploads', express.static(pathModule.join(__dirname, 'public/uploads')));
 
 // ✅ API Routes
 app.use('/api', userRoutes);
