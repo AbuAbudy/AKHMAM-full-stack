@@ -35,6 +35,11 @@ app.use(express.static('public'));
 app.use("/assets/uploads", express.static(pathModule.join(__dirname, "public/assets/uploads")));
 app.use('/assets/uploads', express.static(pathModule.join(__dirname, 'public/uploads')));
 
+// ✅ Root route for Railway or health check
+app.get('/', (req, res) => {
+  res.send('✅ Akmam backend is running');
+});
+
 // ✅ API Routes
 app.use('/api', userRoutes);
 app.use('/api', homeRoutes);
@@ -50,8 +55,10 @@ app.use('/api/auth', authRoutes);
 sequelize.authenticate()
   .then(() => {
     console.log('✅ Connected to the database successfully.');
+  })
+  .then(() => {
     app.listen(PORT, () => {
-      console.log(`🚀 Server is running at http://localhost:${PORT}`);
+      console.log(`🚀 Server is running at PORT: ${PORT}`);
     });
   })
   .catch((err) => {
