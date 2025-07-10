@@ -18,10 +18,11 @@ function Blog() {
   const [showAllComments, setShowAllComments] = useState({});
   const currentUser = 'user_123';
 
-  // Fetch categories for the category filter dropdown
+  const API = import.meta.env.VITE_API_URL;
+
   const fetchCategories = async () => {
     try {
-      const res = await axios.get('/api/blog/categories');
+      const res = await axios.get(`${API}/api/blog/categories`);
       setCategories(res.data.categories || []);
     } catch (err) {
       console.error('Error fetching categories:', err);
@@ -32,7 +33,7 @@ function Blog() {
     setLoading(true);
     try {
       const query = new URLSearchParams({ page, search, category, tag }).toString();
-      const res = await axios.get(`/api/blog?${query}`);
+      const res = await axios.get(`${API}/api/blog?${query}`);
       setPosts(res.data.posts);
       setPagination(res.data.pagination);
     } catch (err) {
@@ -54,12 +55,12 @@ function Blog() {
     setPosts(prev =>
       prev.map(post => {
         if (post.id === id) {
-          const liked = post.likes?.includes(currentUser);
+          const liked = (post.likes || []).includes(currentUser);
           const updatedLikes = liked
-            ? post.likes.filter(u => u !== currentUser)
+            ? (post.likes || []).filter(u => u !== currentUser)
             : [...(post.likes || []), currentUser];
 
-          axios.put(`/api/blog/${id}`, { ...post, likes: updatedLikes });
+          axios.put(`${API}/api/blog/${id}`, { ...post, likes: updatedLikes });
           return { ...post, likes: updatedLikes };
         }
         return post;
@@ -91,7 +92,7 @@ function Blog() {
     setPosts(prev => prev.map(post => {
       if (post.id === id) {
         const updatedComments = [...(post.comments || []), newComment];
-        axios.put(`/api/blog/${id}`, { ...post, comments: updatedComments });
+        axios.put(`${API}/api/blog/${id}`, { ...post, comments: updatedComments });
         return { ...post, comments: updatedComments };
       }
       return post;
@@ -153,14 +154,14 @@ function Blog() {
 
       <div className="blog-filters">
         <input type="text" placeholder="Search by title..." value={search} onChange={e => setSearch(e.target.value)} />
-        
+
         <select value={category} onChange={e => setCategory(e.target.value)}>
           <option value="">All Categories</option>
           {categories.map(cat => (
             <option key={cat.id} value={cat.name}>{cat.name}</option>
           ))}
         </select>
-        
+
         <select value={tag} onChange={e => setTag(e.target.value)}>
           <option value="">All Tags</option>
           <option value="Ramadan">Ramadan</option>
@@ -176,18 +177,23 @@ function Blog() {
       ) : (
         posts.map(post => (
           <div key={post.id} className="blog-post" id={`post-${post.id}`}>
-            <img src={`${import.meta.env.VITE_API_URL}/${post.image}`} alt={post.title} className="post-image" />
+            {post.image && (
+              <img src={`${API}/${post.image}`} alt={post.title} className="post-image" />
+            )}
             <div className="post-content">
               <h2>{post.title}</h2>
               <p>{post.description}</p>
 
               <div className="post-actions">
-                <button className={`like-button ${post.likes?.includes(currentUser) ? 'liked' : ''}`} onClick={() => handleLikeToggle(post.id)}>
-                  {post.likes?.includes(currentUser) ? <FaHeart /> : <FaRegHeart />}
+                <button
+                  className={`like-button ${(post.likes || []).includes(currentUser) ? 'liked' : ''}`}
+                  onClick={() => handleLikeToggle(post.id)}
+                >
+                  {(post.likes || []).includes(currentUser) ? <FaHeart /> : <FaRegHeart />}
                 </button>
-                <span>{post.likes?.length || 0} Likes</span>
+                <span>{(post.likes || []).length} Likes</span>
                 <span className="comment-count">
-                  <FaComment /> {post.comments?.length || 0} Comments
+                  <FaComment /> {(post.comments || []).length} Comments
                 </span>
               </div>
 
@@ -219,7 +225,7 @@ function Blog() {
               </form>
 
               <div className="comment-list">
-                {(showAllComments[post.id] ? post.comments : post.comments?.slice(-1)).map((comment, index) => (
+                {(showAllComments[post.id] ? post.comments : (post.comments || []).slice(-1)).map((comment, index) => (
                   <div key={index} className="comment">
                     <strong>{comment.name}</strong> <span style={{ fontSize: '0.85rem', color: '#666' }}> - {timeAgo(comment.timestamp)}</span>
                     <p>{comment.text}</p>
@@ -227,8 +233,8 @@ function Blog() {
                 ))}
 
                 {post.comments && post.comments.length > 1 && (
-                  <button 
-                    className="show-more-comments" 
+                  <button
+                    className="show-more-comments"
                     onClick={() => setShowAllComments(prev => ({ ...prev, [post.id]: !prev[post.id] }))}
                   >
                     {showAllComments[post.id] ? 'Show Less Comments' : `Show ${post.comments.length - 1} More Comment${post.comments.length - 1 > 1 ? 's' : ''}`}

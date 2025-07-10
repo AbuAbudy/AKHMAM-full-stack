@@ -4,10 +4,11 @@ import axios from "axios";
 
 function Projects() {
   const [content, setContent] = useState(null);
+  const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     axios
-      .get("/api/projects")
+      .get(`${API}/api/projects`)
       .then((res) => setContent(res.data))
       .catch((err) => console.error("Failed to fetch projects", err));
   }, []);
@@ -26,15 +27,7 @@ function Projects() {
     const current = projectsData[`project_${i}_current`];
     const image = projectsData[`project_${i}_image`];
 
-    // Skip empty rows
-    if (
-      !title &&
-      !description &&
-      !status &&
-      !total &&
-      !current &&
-      !image
-    ) {
+    if (!title && !description && !status && !total && !current && !image) {
       continue;
     }
 
@@ -53,7 +46,6 @@ function Projects() {
     });
   }
 
-  // Renumber for display (optional)
   const cleanedProjects = projects.map((p, idx) => ({
     ...p,
     index: idx + 1,
@@ -69,11 +61,13 @@ function Projects() {
       <section className="projects-grid">
         {cleanedProjects.map((p, idx) => (
           <div className="project-card" key={idx}>
-            <img
-              src={`${import.meta.env.VITE_API_URL}/${p.image}`}
-              alt={p.title}
-              onError={(e) => (e.target.style.display = "none")}
-            />
+            {p.image && (
+              <img
+                src={`${API}/${p.image}`}
+                alt={p.title}
+                onError={(e) => (e.target.style.display = "none")}
+              />
+            )}
             <div className="project-content">
               <h3>{p.title}</h3>
               <ReadMore text={p.description} maxLength={200} />
@@ -91,7 +85,6 @@ function Projects() {
   );
 }
 
-// ReadMore component for toggling long descriptions
 function ReadMore({ text, maxLength = 200 }) {
   const [expanded, setExpanded] = useState(false);
 

@@ -23,7 +23,7 @@ function Volunteer() {
 
   useEffect(() => {
     axios
-      .get("${import.meta.env.VITE_API_URL}/api/volunteers")
+      .get(`${import.meta.env.VITE_API_URL}/api/volunteers`)
       .then((res) => setContent(res.data))
       .catch((err) => console.error("Error fetching volunteer content", err));
   }, []);
@@ -35,7 +35,7 @@ function Volunteer() {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "${import.meta.env.VITE_API_URL}/api/volunteers/apply",
+        `${import.meta.env.VITE_API_URL}/api/volunteers/apply`,
         formData
       );
       toast.success(res.data.message || "Submitted successfully!");
