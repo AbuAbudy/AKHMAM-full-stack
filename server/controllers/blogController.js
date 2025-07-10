@@ -13,7 +13,6 @@ const getAllPosts = async (req, res) => {
     const { search = '', category = '', tag = '' } = req.query;
     const where = {};
 
-    // 🔍 Search by title or description
     if (search.trim()) {
       where[Op.or] = [
         { title: { [Op.like]: `%${search.trim()}%` } },
@@ -21,12 +20,10 @@ const getAllPosts = async (req, res) => {
       ];
     }
 
-    // 📁 Filter by category
     if (category.trim()) {
       where.category = category.trim();
     }
 
-    // 🏷️ Filter by tag inside JSON array
     if (tag.trim()) {
       where.tags = {
         [Op.contains]: [tag.trim()],
@@ -42,8 +39,18 @@ const getAllPosts = async (req, res) => {
       offset,
     });
 
+    // ✅ Ensure likes/comments are always arrays
+    const safePosts = posts.map((post) => {
+      const json = post.toJSON();
+      return {
+        ...json,
+        likes: Array.isArray(json.likes) ? json.likes : [],
+        comments: Array.isArray(json.comments) ? json.comments : [],
+      };
+    });
+
     res.json({
-      posts,
+      posts: safePosts,
       pagination: {
         totalPosts,
         totalPages: Math.ceil(totalPosts / limit),
@@ -57,22 +64,20 @@ const getAllPosts = async (req, res) => {
   }
 };
 
-// ✅ GET distinct categories for AdminBlog dropdown
+// ✅ GET distinct categories
 const getCategories = async (req, res) => {
   try {
     const categoriesRaw = await BlogContent.findAll({
-      attributes: [
-        [Sequelize.fn('DISTINCT', Sequelize.col('category')), 'category']
-      ],
+      attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('category')), 'category']],
       raw: true,
     });
 
     const categories = categoriesRaw
       .map((c, i) => ({
         id: i + 1,
-        name: c.category?.trim() || 'Uncategorized'
+        name: c.category?.trim() || 'Uncategorized',
       }))
-      .filter(c => c.name && c.name !== '');
+      .filter((c) => c.name && c.name !== '');
 
     res.json({ categories });
   } catch (error) {
