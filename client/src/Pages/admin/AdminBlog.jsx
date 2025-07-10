@@ -6,6 +6,8 @@ import { FaSun, FaMoon, FaTrash, FaEdit } from "react-icons/fa";
 import Loader from "../../Components/Loader";
 import "../../Styles/AdminBlog.css";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function AdminBlog() {
   const [posts, setPosts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -34,7 +36,7 @@ function AdminBlog() {
   const fetchPosts = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("/api/blog");
+      const res = await axios.get(`${API_URL}/api/blog`);
       const normalizedPosts = res.data.posts.map((post) => {
         let tags = post.tags;
         if (typeof tags === "string") {
@@ -56,7 +58,7 @@ function AdminBlog() {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("/api/blog/categories");
+      const res = await axios.get(`${API_URL}/api/blog/categories`);
       setCategories(res.data.categories || []);
     } catch {
       toast.error("❌ Failed to load categories");
@@ -83,7 +85,7 @@ function AdminBlog() {
       title: post.title,
       description: post.description,
       image: null,
-      preview: post.image ? `${import.meta.env.VITE_API_URL}/${post.image}` : "",
+      preview: post.image ? `${API_URL}/${post.image}` : "",
       tags: Array.isArray(post.tags) ? post.tags.join(", ") : "",
       category: post.category || "",
     });
@@ -110,10 +112,10 @@ function AdminBlog() {
     try {
       setLoading(true);
       if (editingId) {
-        await axios.put(`/api/blog/${editingId}`, formData);
+        await axios.put(`${API_URL}/api/blog/${editingId}`, formData);
         toast.success("✅ Post updated successfully");
       } else {
-        await axios.post("/api/blog", formData);
+        await axios.post(`${API_URL}/api/blog`, formData);
         toast.success("✅ Post created successfully");
       }
       setForm({ title: "", description: "", image: null, preview: "", tags: "", category: "" });
@@ -135,7 +137,7 @@ function AdminBlog() {
             onClick={async () => {
               try {
                 setLoading(true);
-                await axios.delete(`/api/blog/${id}`);
+                await axios.delete(`${API_URL}/api/blog/${id}`);
                 toast.success("🗑️ Post deleted successfully");
                 fetchPosts();
               } catch {
@@ -242,12 +244,12 @@ function AdminBlog() {
             <div key={post.id} className="admin-item">
               {post.image && (
                 <img
-                  src={`${import.meta.env.VITE_API_URL}/${post.image}`}
+                  src={`${API_URL}/${post.image}`}
                   alt={post.title}
                   className="post-image"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = "`${import.meta.env.VITE_API_URL}/assets/uploads/default.jpg";
+                    e.target.src = `${API_URL}/assets/uploads/default.jpg`;
                   }}
                 />
               )}
