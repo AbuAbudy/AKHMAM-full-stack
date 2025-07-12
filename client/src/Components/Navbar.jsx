@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../Styles/Navbar.css';
 import { FaSun, FaMoon } from 'react-icons/fa';
+import logo from '../assets/akmamlogo.png';
+
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -31,7 +33,7 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="logo"><img src="client\src\assets\logo.jpg" alt="Akmam logo" />𝔸𝕂𝕄𝔸𝕄</div>
+      <div className="logo"><img src={logo} alt="Akmam logo"/>𝔸𝕂𝕄𝔸𝕄</div>
       <ul className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
         <li><Link to="/" onClick={closeMenu}>Home</Link></li>
         <li><Link to="/about" onClick={closeMenu}>About</Link></li>

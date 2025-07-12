@@ -122,3 +122,25 @@ body.dark-mode .navbar .nav-links li a:hover {
 body.dark-mode .hamburger {
   color: #ffcc00;
 }
+
+/* Logo container */
+.navbar .logo {
+  display: flex;
+  align-items: center;
+  font-size: 30px;
+  color: #fff;
+  font-weight: bold;
+  gap: 10px; /* space between image and text */
+  cursor: default;
+}
+
+/* Logo image */
+.navbar .logo img {
+  height: 40px;      /* adjust to fit navbar height */
+  width: auto;       /* keep aspect ratio */
+  border-radius: 5px; /* optional, slightly rounded corners */
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
