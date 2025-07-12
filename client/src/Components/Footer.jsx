@@ -33,12 +33,12 @@ function Footer() {
           <p>Phone: +251-900-000000</p>
           <p>Address: Agaro, Ethiopia</p>
           <div className="social-icons">
-            <a href="#" aria-label="Facebook"><i className="fab fa-facebook-f"></i></a>
+            <a href="https://www.facebook.com/Akmaam" aria-label="Facebook"><i className="fab fa-facebook-f"></i></a>
             <a href="#" aria-label="Twitter"><i className="fab fa-twitter"></i></a>
-            <a href="https://t.me/furtuuun" aria-label="Telegram"><i className="fab fa-telegram-plane"></i></a>
-            <a href="#" aria-label="YouTube"><i className="fab fa-youtube"></i></a>
+            <a href="https://t.me/akmamofficial2008" aria-label="Telegram"><i className="fab fa-telegram-plane"></i></a>
+            <a href="akmamofficial" aria-label="YouTube"><i className="fab fa-youtube"></i></a>
 
-            <a href="https://www.tiktok.com/@yourusername" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.tiktok.com/@akmamofficial" target="_blank" rel="noopener noreferrer">
   <i className="fab fa-tiktok"></i>
 </a>
 

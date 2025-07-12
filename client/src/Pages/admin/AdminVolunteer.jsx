@@ -25,7 +25,7 @@ function AdminVolunteer() {
 
   const fetchContent = async () => {
     try {
-      const res = await axios.get("${import.meta.env.VITE_API_URL}/api/volunteers");
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/volunteers`);
       setVolunteerContent(res.data);
       setUpdatedContent(res.data);
       setLoading(false);
@@ -37,7 +37,7 @@ function AdminVolunteer() {
   const fetchApplications = async () => {
     try {
       setLoadingApps(true);
-      const res = await axios.get("${import.meta.env.VITE_API_URL}/api/volunteers/applications");
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/volunteers/applications`);
       setApplications(res.data);
     } catch (err) {
       console.error("Error fetching applications:", err);
@@ -84,7 +84,7 @@ function AdminVolunteer() {
       formData.append(key, updates[key]);
     }
     try {
-      const res = await axios.put("${import.meta.env.VITE_API_URL}/api/volunteers", formData, {
+      const res = await axios.put(`${import.meta.env.VITE_API_URL}/api/volunteers`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -130,7 +130,7 @@ function AdminVolunteer() {
       <h1>Manage Volunteer Page Content</h1>
 
       {Object.entries(volunteerContent).map(([section, data]) => {
-        if (section === "application") return null; 
+        if (section === "application") return null;
         return (
           <div key={section} className="home-section">
             <h2>{section.toUpperCase()}</h2>
