@@ -33,7 +33,7 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="logo"><img src={logo} alt="Akmam logo"/>𝔸𝕂𝕄𝔸𝕄</div>
+      <div id='logos' className="logo"><img src={logo} alt="Akmam logo"/>𝔸𝕂𝕄𝔸𝕄</div>
       <ul className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
         <li><Link to="/" onClick={closeMenu}>Home</Link></li>
         <li><Link to="/about" onClick={closeMenu}>About</Link></li>
