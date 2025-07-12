@@ -3,107 +3,62 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 24px;
+  padding: 20px;
   background-color: #007e33;
   position: sticky;
   top: 0;
   z-index: 1000;
-  flex-wrap: wrap;
 }
 
-/* Logo container */
 .navbar .logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  font-size: 80px;
   color: #fff;
-  font-size: 32px;
-  font-weight: bold;
-  cursor: default;
-  flex-shrink: 0;
 }
 
-.logo img {
-  height: 80px;
-  width: auto;
-  object-fit: contain;
-  user-select: none;
-  pointer-events: none;
-}
-
-/* Nav Links */
 .navbar .nav-links {
   display: flex;
-  list-style: none;
-  align-items: center;
-  gap: 24px;
+  list-style-type: none;
+}
+
+.navbar .nav-links li {
+  margin: 0 20px;
 }
 
 .navbar .nav-links li a {
   color: #fff;
   text-decoration: none;
   font-size: 20px;
-  transition: color 0.2s ease;
 }
 
 .navbar .nav-links li a:hover {
-  color: gold;
   text-decoration: underline;
-}
-
-/* Actions (Dark toggle + Hamburger) */
-.navbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-/* Dark mode toggle */
-.dark-mode-toggle {
-  background: none;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  font-size: 22px;
-  display: flex;
-  align-items: center;
-  transition: color 0.2s ease;
-}
-
-.dark-mode-toggle:hover {
-  color: #ffd700;
+  color: gold;
 }
 
 /* Hamburger menu */
 .hamburger {
   display: none;
-  font-size: 28px;
-  color: #fff;
   cursor: pointer;
-  transition: transform 0.3s ease;
 }
 
 .hamburger.open {
   transform: rotate(90deg);
 }
 
-.hamburger:hover {
-  color: gold;
+.nav-links.active {
+  display: block;
 }
 
-/* Mobile Responsive */
 @media (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
   .navbar .nav-links {
     display: none;
     flex-direction: column;
     width: 100%;
     background-color: #007e33;
-    padding: 16px 0;
+    position: absolute;
+    top: 80px;
+    left: 0;
+    padding: 20px;
   }
 
   .navbar .nav-links.active {
@@ -111,13 +66,23 @@
   }
 
   .navbar .nav-links li {
-    width: 100%;
-    padding: 12px 24px;
+    margin: 15px 0;
   }
+
+  .navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
 
   .hamburger {
     display: block;
+    font-size: 30px;
+    color: #fff;
   }
+}
+.hamburger:hover{
+  color: gold;
 }
 
 /* Dark Mode Styles */
@@ -125,23 +90,56 @@ body.dark-mode .navbar {
   background-color: #003311;
 }
 
-body.dark-mode .logo {
+body.dark-mode .navbar .logo {
   color: #ffcc00;
 }
 
-body.dark-mode .nav-links li a {
+body.dark-mode .navbar .nav-links li a {
   color: #ffcc00;
 }
 
-body.dark-mode .nav-links li a:hover {
+body.dark-mode .navbar .nav-links li a:hover {
   color: #fff;
   text-decoration: underline;
 }
 
+.dark-mode-toggle {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 22px;
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.dark-mode-toggle:hover {
+  color: #ffd700;
+}
+
+/* Adjust hamburger color in dark mode */
 body.dark-mode .hamburger {
   color: #ffcc00;
 }
 
-body.dark-mode .dark-mode-toggle {
-  color: #ffcc00;
+/* Logo container */
+.navbar .logo {
+  display: flex;
+  align-items: center;
+  font-size: 30px;
+  color: #fff;
+  font-weight: bold;
+  gap: 10px; 
+  cursor: default;
+}
+
+/* Logo image */
+.logo img {
+  height: 100px;      
+  width: auto;       
+  border-radius: 5px;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
 }
