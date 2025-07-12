@@ -3,7 +3,7 @@
 
 import { Link } from 'react-router-dom';
 import '../Styles/Footer.css'
-import logo from '../assets/logo.jpg'
+import logo from '../assets/Akmamlogo.png'
 
 function Footer() {
   return (
