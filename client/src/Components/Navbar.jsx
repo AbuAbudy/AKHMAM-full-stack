@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../Styles/Navbar.css';
 import { FaSun, FaMoon } from 'react-icons/fa';
-import logo from '../assets/akmamlogo.png';
+import logo from '../assets/Akmamlogo.png';
 
 
 function Navbar() {
