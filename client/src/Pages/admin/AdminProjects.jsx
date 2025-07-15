@@ -5,7 +5,8 @@ import "../../Styles/AdminHome.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const BACKEND_URL = `${import.meta.env.VITE_API_URL}/`;
+// Ensure no trailing slash in VITE_API_URL
+const BACKEND_URL = import.meta.env.VITE_API_URL.replace(/\/$/, "");
 
 function AdminProjects() {
   const [hero, setHero] = useState({ title: "", subtitle: "" });
@@ -23,7 +24,7 @@ function AdminProjects() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("/api/projects");
+      const res = await axios.get(`${BACKEND_URL}/api/projects`);
       const data = res.data;
 
       setHero({
@@ -82,7 +83,7 @@ function AdminProjects() {
     const token = localStorage.getItem("token");
     try {
       await axios.put(
-        "/api/projects",
+        `${BACKEND_URL}/api/projects`,
         {
           section: "hero",
           title: hero.title,
@@ -90,7 +91,7 @@ function AdminProjects() {
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      toast.success(" Hero section saved", { autoClose: 2000 });
+      toast.success("✅ Hero section saved", { autoClose: 2000 });
     } catch (err) {
       toast.error("❌ Failed to save hero section");
     }
@@ -122,13 +123,13 @@ function AdminProjects() {
     }
 
     try {
-      await axios.put("/api/projects", formData, {
+      await axios.put(`${BACKEND_URL}/api/projects`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
-      toast.success(`✅ Project ${p.index} saved successfully`, {
+      toast.success(`✅ Project ${p.index} saved`, {
         position: "bottom-center",
         autoClose: 2000,
       });
@@ -193,7 +194,7 @@ function AdminProjects() {
       await Promise.all(
         keys.map((key) =>
           axios.put(
-            "/api/projects",
+            `${BACKEND_URL}/api/projects`,
             { section: "projects", [`project_${i}_${key}`]: "" },
             { headers: { Authorization: `Bearer ${token}` } }
           )
@@ -323,7 +324,7 @@ function AdminProjects() {
             />
             {p.image && !p.imageFile && (
               <img
-                src={`${BACKEND_URL}${p.image}?t=${Date.now()}`}
+                src={`${BACKEND_URL}/${p.image}?t=${Date.now()}`}
                 alt={`Project ${p.index}`}
                 width="200"
                 style={{ marginTop: "8px" }}
