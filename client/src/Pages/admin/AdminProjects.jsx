@@ -5,7 +5,7 @@ import "../../Styles/AdminHome.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const BACKEND_URL = "`${import.meta.env.VITE_API_URL}/";
+const BACKEND_URL = `${import.meta.env.VITE_API_URL}/`;
 
 function AdminProjects() {
   const [hero, setHero] = useState({ title: "", subtitle: "" });

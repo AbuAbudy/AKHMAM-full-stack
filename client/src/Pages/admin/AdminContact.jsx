@@ -21,7 +21,7 @@ function AdminContact() {
 
   const fetchContent = () => {
     axios
-      .get("`${import.meta.env.VITE_API_URL}/api/contact")
+      .get(`${import.meta.env.VITE_API_URL}/api/contact`)
       .then((res) => {
         setContactContent(res.data);
         setUpdatedContent(res.data);
