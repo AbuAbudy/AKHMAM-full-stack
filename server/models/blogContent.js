@@ -27,18 +27,51 @@ const BlogContent = sequelize.define('BlogContent', {
   },
 
   tags: {
-    type: DataTypes.JSON,
-    defaultValue: [],
+    type: DataTypes.TEXT, // stored as stringified JSON
+    defaultValue: '[]',
+    get() {
+      const value = this.getDataValue('tags');
+      try {
+        return JSON.parse(value || '[]');
+      } catch {
+        return [];
+      }
+    },
+    set(val) {
+      this.setDataValue('tags', JSON.stringify(val || []));
+    },
   },
 
   likes: {
-    type: DataTypes.JSON,
-    defaultValue: [],
+    type: DataTypes.TEXT,
+    defaultValue: '[]',
+    get() {
+      const value = this.getDataValue('likes');
+      try {
+        return JSON.parse(value || '[]');
+      } catch {
+        return [];
+      }
+    },
+    set(val) {
+      this.setDataValue('likes', JSON.stringify(val || []));
+    },
   },
 
   comments: {
-    type: DataTypes.JSON,
-    defaultValue: [],
+    type: DataTypes.TEXT,
+    defaultValue: '[]',
+    get() {
+      const value = this.getDataValue('comments');
+      try {
+        return JSON.parse(value || '[]');
+      } catch {
+        return [];
+      }
+    },
+    set(val) {
+      this.setDataValue('comments', JSON.stringify(val || []));
+    },
   },
 }, {
   tableName: 'blog_contents',
