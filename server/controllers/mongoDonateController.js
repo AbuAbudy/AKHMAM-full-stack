@@ -1,5 +1,5 @@
 const path = require('path');
-const DonateContent = require('../models/donateContent');
+const DonateContent = require('../models/mongo/donateContent');
 
 // Group DB rows by section and key
 const groupBySection = (data) => {
@@ -27,7 +27,7 @@ const generateProofKey = (existingKeys) => {
 // GET /api/donate
 const getDonateContent = async (req, res) => {
   try {
-    const rows = await DonateContent.findAll({ order: [['id', 'ASC']] });
+    const rows = await DonateContent.find().sort({ _id: 1 }).lean();
     res.json(groupBySection(rows));
   } catch (err) {
     console.error(err);
@@ -57,31 +57,22 @@ const updateDonateContent = async (req, res) => {
   try {
     // Upsert all keys present in updates
     for (const [key_name, value] of Object.entries(updates)) {
-      const [record, created] = await DonateContent.findOrCreate({
-        where: { section, key_name },
-        defaults: { value }
-      });
-      if (!created) {
-        record.value = value;
-        await record.save();
-      }
+      await DonateContent.findOneAndUpdate(
+        { section, key_name },
+        { value },
+        { new: true, upsert: true }
+      );
     }
 
-    // Delete keys that are NOT in the current updates for this section
-    const allKeysInDB = await DonateContent.findAll({
-      where: { section },
-      attributes: ['key_name']
-    });
-
-    const keysInDB = allKeysInDB.map((row) => row.key_name);
-    const keysToDelete = keysInDB.filter((key) => !Object.keys(updates).includes(key));
+    // Delete keys NOT in the current updates for this section
+    const allDocs = await DonateContent.find({ section }, 'key_name').lean();
+    const keysInDB = allDocs.map(doc => doc.key_name);
+    const keysToDelete = keysInDB.filter(key => !Object.keys(updates).includes(key));
 
     if (keysToDelete.length > 0) {
-      await DonateContent.destroy({
-        where: {
-          section,
-          key_name: keysToDelete,
-        },
+      await DonateContent.deleteMany({
+        section,
+        key_name: { $in: keysToDelete },
       });
     }
 
@@ -102,10 +93,8 @@ const submitDonationProof = async (req, res) => {
 
     const screenshot = req.file ? `/assets/uploads/${req.file.filename}` : null;
 
-    const existing = await DonateContent.findAll({
-      where: { section: 'donationProof' }
-    });
-    const keys = existing.map((r) => r.key_name);
+    const existing = await DonateContent.find({ section: 'donationProof' }, 'key_name').lean();
+    const keys = existing.map(r => r.key_name);
     const newKey = generateProofKey(keys);
 
     const data = {
@@ -114,14 +103,15 @@ const submitDonationProof = async (req, res) => {
       reason,
       email: email || '',
       screenshot,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
-    await DonateContent.create({
+    const newDoc = new DonateContent({
       section: 'donationProof',
       key_name: newKey,
-      value: JSON.stringify(data)
+      value: JSON.stringify(data),
     });
+    await newDoc.save();
 
     res.json({ message: 'Donation proof submitted successfully.' });
   } catch (err) {
@@ -134,14 +124,12 @@ const submitDonationProof = async (req, res) => {
 const deleteDonationProof = async (req, res) => {
   const { key } = req.params;
   try {
-    const deleted = await DonateContent.destroy({
-      where: {
-        section: 'donationProof',
-        key_name: key,
-      },
+    const deleted = await DonateContent.deleteOne({
+      section: 'donationProof',
+      key_name: key,
     });
 
-    if (deleted) {
+    if (deleted.deletedCount > 0) {
       res.json({ message: 'Donation proof deleted.' });
     } else {
       res.status(404).json({ error: 'Proof not found' });

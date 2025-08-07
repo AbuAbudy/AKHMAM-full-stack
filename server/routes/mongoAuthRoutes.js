@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { login, forgotPassword, resetPassword } = require('../controllers/authController');
+const { login, forgotPassword, resetPassword } = require('../controllers/mongoAuthController');
 
 router.post('/login', login);
 router.post('/forgot-password', forgotPassword);

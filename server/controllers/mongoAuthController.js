@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const User = require('../models/user'); // Adjust path if needed
+const User = require('../models/mongo/user'); // Adjust path if needed
 require('dotenv').config();
 
 // TEMPORARY in-memory store for reset tokens (replace with DB or Redis in production)
@@ -12,7 +12,7 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
@@ -23,7 +23,7 @@ const login = async (req, res) => {
     }
 
     const payload = {
-      id: user.id,
+      id: user._id,
       email: user.email,
       isAdmin: user.isAdmin,
     };
@@ -41,13 +41,13 @@ const login = async (req, res) => {
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
   try {
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ email });
     if (!user || !user.isAdmin) {
       return res.status(404).json({ message: 'Admin user not found' });
     }
 
     const token = crypto.randomBytes(20).toString('hex');
-    resetTokens.set(token, user.id);
+    resetTokens.set(token, user._id.toString());
 
     // Expire token after 10 minutes
     setTimeout(() => resetTokens.delete(token), 10 * 60 * 1000);
@@ -70,13 +70,14 @@ const resetPassword = async (req, res) => {
       return res.status(400).json({ message: 'Invalid or expired reset token' });
     }
 
-    const user = await User.findByPk(userId);
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     const hashed = await bcrypt.hash(newPassword, 10);
-    await user.update({ password: hashed });
+    user.password = hashed;
+    await user.save();
 
     resetTokens.delete(token);
     res.json({ message: 'Password reset successful' });

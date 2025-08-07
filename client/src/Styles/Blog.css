@@ -484,3 +484,58 @@ body.dark-mode .show-more-comments {
 body.dark-mode .show-more-comments:hover {
   color: #9c6fe4;
 }
+
+.comment-controls {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+  align-items: center;
+}
+
+.comment-controls button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background-color: #f5f5f5;
+  color: #444;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.comment-controls button:hover {
+  background-color: #e0e0e0;
+  color: #000;
+  transform: translateY(-1px);
+  border-color: #ccc;
+}
+
+.comment-controls button:active {
+  transform: scale(0.98);
+}
+
+.comment-controls button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 120, 255, 0.3);
+}
+
+.comment-controls .edit-btn {
+  background-color: #e8f0fe;
+  color: #1967d2;
+}
+
+.comment-controls .edit-btn:hover {
+  background-color: #d2e3fc;
+}
+
+.comment-controls .delete-btn {
+  background-color: #fdecea;
+  color: #d93025;
+}
+
+.comment-controls .delete-btn:hover {
+  background-color: #f9d3ce;
+}

@@ -1,9 +1,10 @@
 const path = require("path");
-const ProjectContent = require("../models/ProjectContent");
+const ProjectContent = require("../models/mongo/projectContent");
 
+// GET all project content grouped by section
 const getProjectContent = async (req, res) => {
   try {
-    const rows = await ProjectContent.findAll();
+    const rows = await ProjectContent.find({});
     const result = {};
 
     rows.forEach(({ section, key, value }) => {
@@ -18,6 +19,7 @@ const getProjectContent = async (req, res) => {
   }
 };
 
+// PUT to update or create content (with file support)
 const updateProjectContent = async (req, res) => {
   const { section, ...rest } = req.body;
 
@@ -40,14 +42,13 @@ const updateProjectContent = async (req, res) => {
       Object.entries(updates).map(async ([key, value]) => {
         if (value === undefined || value === null) return;
 
-        const [record, created] = await ProjectContent.findOrCreate({
-          where: { section, key },
-          defaults: { value: value.toString() },
-        });
+        const existing = await ProjectContent.findOne({ section, key });
 
-        if (!created) {
-          record.value = value.toString();
-          await record.save();
+        if (existing) {
+          existing.value = value.toString();
+          await existing.save();
+        } else {
+          await ProjectContent.create({ section, key, value: value.toString() });
         }
       })
     );

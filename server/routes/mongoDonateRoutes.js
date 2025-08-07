@@ -6,7 +6,7 @@ const {
   updateDonateContent,
   submitDonationProof,
   deleteDonationProof,
-} = require('../controllers/donateController');
+} = require('../controllers/mongoDonateController');
 
 router.get('/', getDonateContent);
 router.put('/', upload.any(), updateDonateContent);

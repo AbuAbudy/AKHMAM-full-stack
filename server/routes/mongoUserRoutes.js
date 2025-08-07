@@ -1,15 +1,15 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-const User = require('../models/user');  // Import the User model
+const User = require('../models/mongo/user'); // Mongoose User model
 const router = express.Router();
 
-// Route to create a new user (with hashing and admin support)
+// Create a new user with password hashing and admin flag
 router.post('/users', async (req, res) => {
   try {
     const { name, email, password, isAdmin } = req.body;
 
-    // Check for existing user
-    const existingUser = await User.findOne({ where: { email } });
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: 'User with this email already exists' });
     }
@@ -17,17 +17,19 @@ router.post('/users', async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create the user with hashed password and isAdmin flag
-    const newUser = await User.create({
+    // Create and save new user
+    const newUser = new User({
       name,
       email,
       password: hashedPassword,
-      isAdmin: isAdmin === true || isAdmin === 'true' // support boolean or string from client
+      isAdmin: isAdmin === true || isAdmin === 'true',
     });
 
-    // Return safe user info only
+    await newUser.save();
+
+    // Return safe public info
     res.status(201).json({
-      id: newUser.id,
+      id: newUser._id,
       name: newUser.name,
       email: newUser.email,
       isAdmin: newUser.isAdmin,
@@ -38,12 +40,10 @@ router.post('/users', async (req, res) => {
   }
 });
 
-// Route to get all users
+// Get all users (excluding passwords)
 router.get('/users', async (req, res) => {
   try {
-    const users = await User.findAll({
-      attributes: ['id', 'name', 'email', 'isAdmin', 'createdAt', 'updatedAt'] // exclude password
-    });
+    const users = await User.find({}, 'id name email isAdmin createdAt updatedAt'); // projection to exclude password
     res.status(200).json(users);
   } catch (error) {
     res.status(400).json({ error: 'Error fetching users', details: error.message });

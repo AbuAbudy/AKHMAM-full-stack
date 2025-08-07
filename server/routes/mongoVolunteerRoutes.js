@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/uploadMiddleware");
-const volunteerController = require("../controllers/volunteerController");
+const volunteerController = require("../controllers/mongoVolunteerController");
 
 router.get("/", volunteerController.getVolunteerPageContent);
 router.put("/", upload.any(), volunteerController.updateVolunteerContent);

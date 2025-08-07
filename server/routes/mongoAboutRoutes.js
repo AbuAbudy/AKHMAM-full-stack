@@ -7,7 +7,7 @@ const {
   addListItem,
   updateListItem,
   deleteListItem
-} = require('../controllers/aboutController');
+} = require('../controllers/mongoAboutController');
 const adminMiddleware = require('../middleware/adminMiddleware');
 const upload = require('../middleware/uploadMiddleware');
 

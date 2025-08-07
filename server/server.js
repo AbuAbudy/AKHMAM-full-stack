@@ -3,64 +3,70 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const express = require('express');
 const cors = require('cors');
-const pathModule = require('path');
-const sequelize = require('./config/database');
+const mongoose = require('mongoose');
 
-// Routes
-const userRoutes = require('./routes/userRoutes');
-const homeRoutes = require('./routes/homeRoutes');
-const aboutRoutes = require('./routes/aboutRoutes');
-const donateRoutes = require('./routes/donateRoutes');
-const volunteerRoutes = require("./routes/volunteerRoutes");
-const projectRoutes = require("./routes/projectRoutes");
-const blogRoutes = require('./routes/blogRoutes');
-const contactRoutes = require('./routes/contactRoutes');
-const authRoutes = require('./routes/authRoutes');
+const mongoAuthRoutes = require('./routes/mongoAuthRoutes');
+const mongoBlogRoutes = require('./routes/mongoBlogRoutes');
+const mongoHomeRoutes = require('./routes/mongoHomeRoutes');
+const mongoAboutRoutes = require('./routes/mongoAboutRoutes');
+const mongoUserRoutes = require('./routes/mongoUserRoutes');
+const mongoDonateRoutes = require('./routes/mongoDonateRoutes');
+const mongoVolunteerRoutes = require('./routes/mongoVolunteerRoutes');
+const mongoProjectRoutes = require('./routes/mongoProjectRoutes');
+const mongoContactRoutes = require('./routes/mongoContactRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ CORS Configuration for Netlify frontend
+// ✅ Allow CORS from both Netlify and local frontend
+const allowedOrigins = ['https://akmam.netlify.app', 'http://localhost:5173'];
+
 app.use(cors({
-  origin: "https://akmam.netlify.app",
+  origin: function (origin, callback) {
+    // allow requests with no origin like mobile apps or curl
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('CORS not allowed from this origin: ' + origin));
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
+  credentials: true,
 }));
 
 app.use(express.json());
 
-// ✅ Serve all static files under public/assets
-app.use('/assets', express.static(pathModule.join(__dirname, 'public/assets')));
+// ✅ Serve static files
+app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
 app.use(express.static('public'));
-app.use("/assets/uploads", express.static(pathModule.join(__dirname, "public/assets/uploads")));
-app.use('/assets/uploads', express.static(pathModule.join(__dirname, 'public/uploads')));
+app.use('/assets/uploads', express.static(path.join(__dirname, 'public/assets/uploads')));
+app.use('/assets/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-// ✅ Root route for Railway or health check
+// ✅ Root route
 app.get('/', (req, res) => {
   res.send('✅ Akmam backend is running');
 });
 
-// ✅ API Routes
-app.use('/api', userRoutes);
-app.use('/api', homeRoutes);
-app.use('/api', aboutRoutes);
-app.use('/api/donate', donateRoutes);
-app.use('/api/volunteers', volunteerRoutes);
-app.use('/api/projects', projectRoutes);
-app.use('/api/blog', blogRoutes);
-app.use('/api/contact', contactRoutes);
-app.use('/api/auth', authRoutes);
+// ✅ API routes
+app.use('/api', mongoBlogRoutes);
+app.use('/api', mongoHomeRoutes);
+app.use('/api', mongoAboutRoutes);
+app.use('/api', mongoUserRoutes);
+app.use('/api/donate', mongoDonateRoutes);
+app.use('/api/volunteers', mongoVolunteerRoutes);
+app.use('/api/projects', mongoProjectRoutes);
+app.use('/api/contact', mongoContactRoutes);
+app.use('/api/auth', mongoAuthRoutes);
 
-// ✅ Test DB connection & start server
-sequelize.authenticate()
+// ✅ MongoDB connection
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
-    console.log('✅ Connected to the database successfully.');
-  })
-  .then(() => {
+    console.log('✅ Connected to MongoDB');
     app.listen(PORT, () => {
       console.log(`🚀 Server is running at PORT: ${PORT}`);
     });
   })
   .catch((err) => {
-    console.error('❌ Database connection failed:', err);
+    console.error('❌ MongoDB connection failed:', err);
   });

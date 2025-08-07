@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getHomeContent, updateHomeContent } = require('../controllers/homeController');
+const { getHomeContent, updateHomeContent } = require('../controllers/mongoHomeController');
 const adminMiddleware = require('../middleware/adminMiddleware');
 const upload = require('../middleware/uploadMiddleware');
 

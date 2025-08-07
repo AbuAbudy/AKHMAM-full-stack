@@ -1,4 +1,4 @@
-const AboutContent = require('../models/aboutContent');
+const AboutContent = require('../models/mongo/aboutContent');
 const path = require('path');
 
 // Helper to group by section
@@ -13,7 +13,7 @@ const groupBySection = (data) => {
 
 const getAboutContent = async (req, res) => {
   try {
-    const contents = await AboutContent.findAll();
+    const contents = await AboutContent.find().lean();
     res.json(groupBySection(contents));
   } catch (error) {
     console.error('Error fetching about content:', error);
@@ -50,15 +50,12 @@ const updateAboutContent = async (req, res) => {
 
   try {
     await Promise.all(Object.entries(updates).map(async ([key_name, value]) => {
-      const [record, created] = await AboutContent.findOrCreate({
-        where: { section, key_name },
-        defaults: { value },
-      });
-
-      if (!created) {
-        record.value = value;
-        await record.save();
-      }
+      const doc = await AboutContent.findOneAndUpdate(
+        { section, key_name },
+        { value },
+        { new: true, upsert: true }
+      );
+      return doc;
     }));
 
     res.json({ message: `About content for section "${section}" updated successfully.` });
@@ -68,17 +65,14 @@ const updateAboutContent = async (req, res) => {
   }
 };
 
-// Get items for whatWeDo or coreValues as array [{id, value}, ...]
+// Get items for whatWeDo or coreValues as array [{_id, section, key_name, value}, ...]
 const getListItems = async (req, res) => {
   const section = req.params.section;
   if (section !== 'whatWeDo' && section !== 'coreValues') {
     return res.status(400).json({ error: 'Invalid list section' });
   }
   try {
-    const items = await AboutContent.findAll({
-      where: { section },
-      order: [['id', 'ASC']],
-    });
+    const items = await AboutContent.find({ section }).sort({ _id: 1 }).lean();
     res.json(items);
   } catch (error) {
     console.error('Error fetching list items:', error);
@@ -97,11 +91,13 @@ const addListItem = async (req, res) => {
     return res.status(400).json({ error: 'Invalid list section' });
   }
   try {
-    // Create key_name dynamically with the next number
-    const count = await AboutContent.count({ where: { section } });
+    // Count documents for this section
+    const count = await AboutContent.countDocuments({ section });
     const key_name = section === 'whatWeDo' ? `item_${count + 1}` : `value_${count + 1}`;
 
-    const newItem = await AboutContent.create({ section, key_name, value });
+    const newItem = new AboutContent({ section, key_name, value });
+    await newItem.save();
+
     res.status(201).json(newItem);
   } catch (error) {
     console.error('Error adding list item:', error);
@@ -117,7 +113,7 @@ const updateListItem = async (req, res) => {
     return res.status(400).json({ error: 'Value is required' });
   }
   try {
-    const item = await AboutContent.findByPk(id);
+    const item = await AboutContent.findById(id);
     if (!item) return res.status(404).json({ error: 'Item not found' });
     item.value = value;
     await item.save();
@@ -132,18 +128,14 @@ const updateListItem = async (req, res) => {
 const deleteListItem = async (req, res) => {
   const id = req.params.id;
   try {
-    const item = await AboutContent.findByPk(id);
+    const item = await AboutContent.findById(id);
     if (!item) return res.status(404).json({ error: 'Item not found' });
     const section = item.section;
 
-    await item.destroy();
+    await item.deleteOne();
 
     // Re-number keys in that section
-    const items = await AboutContent.findAll({
-      where: { section },
-      order: [['id', 'ASC']],
-    });
-
+    const items = await AboutContent.find({ section }).sort({ _id: 1 });
     for (let i = 0; i < items.length; i++) {
       const key_name = section === 'whatWeDo' ? `item_${i + 1}` : `value_${i + 1}`;
       if (items[i].key_name !== key_name) {

@@ -1,7 +1,6 @@
 // server/controllers/homeController.js
-const HomeContent = require('../models/homeContent');
+const HomeContent = require('../models/mongo/home_Contents');
 const path = require('path');
-const fs = require('fs');
 
 const groupBySection = (data) => {
   const result = {};
@@ -14,7 +13,7 @@ const groupBySection = (data) => {
 
 const getHomeContent = async (req, res) => {
   try {
-    const contents = await HomeContent.findAll();
+    const contents = await HomeContent.find().lean();
     const structuredContent = groupBySection(contents);
     res.json(structuredContent);
   } catch (error) {
@@ -41,23 +40,20 @@ const updateHomeContent = async (req, res) => {
   // Handle image fields (from req.files)
   if (req.files && req.files.length > 0) {
     req.files.forEach(file => {
-      // Example: background_image -> 'assets/uploads/filename.jpg'
       const relativePath = path.join('assets', 'uploads', file.filename);
       updates[file.fieldname] = relativePath.replace(/\\/g, '/');
     });
   }
 
   try {
+    // For each key_name, update or create a document
     const updatePromises = Object.entries(updates).map(async ([key_name, value]) => {
-      const [record, created] = await HomeContent.findOrCreate({
-        where: { section, key_name },
-        defaults: { value },
-      });
-
-      if (!created) {
-        record.value = value;
-        await record.save();
-      }
+      const doc = await HomeContent.findOneAndUpdate(
+        { section, key_name },
+        { value },
+        { new: true, upsert: true }
+      );
+      return doc;
     });
 
     await Promise.all(updatePromises);

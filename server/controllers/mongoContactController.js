@@ -1,24 +1,28 @@
-const ContactContent = require("../models/contactContent");
+const ContactContent = require("../models/mongo/contactContent");
 
 // GET all grouped by section
 const getContactContent = async (req, res) => {
   try {
-    const rows = await ContactContent.findAll();
+    const rows = await ContactContent.find({});
     const result = {};
 
     rows.forEach(({ section, key, value }) => {
       if (!result[section]) result[section] = {};
 
-      // For messages, parse value (JSON)
+      // Parse messages section as JSON
       if (section === 'messages') {
         if (!result[section].list) result[section].list = [];
-        result[section].list.push({ key, ...JSON.parse(value) });
+        try {
+          result[section].list.push({ key, ...JSON.parse(value) });
+        } catch (err) {
+          console.error(`Invalid JSON in message key=${key}:`, err);
+        }
       } else {
         result[section][key] = value;
       }
     });
 
-    // Sort messages newest first
+    // Sort messages (newest first)
     if (result.messages?.list) {
       result.messages.list.sort((a, b) => b.key.localeCompare(a.key));
     }
@@ -36,9 +40,14 @@ const updateContactSection = async (req, res) => {
   const updates = req.body;
 
   try {
-    const updatePromises = Object.entries(updates).map(([key, value]) =>
-      ContactContent.update({ value }, { where: { section, key } })
-    );
+    const updatePromises = Object.entries(updates).map(async ([key, value]) => {
+      await ContactContent.findOneAndUpdate(
+        { section, key },
+        { value },
+        { upsert: true, new: true }
+      );
+    });
+
     await Promise.all(updatePromises);
     res.json({ message: `Section "${section}" updated successfully.` });
   } catch (error) {
@@ -55,10 +64,17 @@ const submitContactMessage = async (req, res) => {
 
   try {
     const timestamp = Date.now().toString();
+    const msg = {
+      fullName,
+      email,
+      subject,
+      message
+    };
+
     await ContactContent.create({
       section: 'messages',
       key: timestamp,
-      value: JSON.stringify({ fullName, email, subject, message }),
+      value: JSON.stringify(msg),
     });
 
     res.status(201).json({ message: 'Message received successfully.' });
@@ -72,11 +88,12 @@ const submitContactMessage = async (req, res) => {
 const deleteContactMessage = async (req, res) => {
   const { key } = req.params;
   try {
-    const deleted = await ContactContent.destroy({
-      where: { section: 'messages', key }
+    const result = await ContactContent.findOneAndDelete({
+      section: 'messages',
+      key,
     });
 
-    if (deleted) {
+    if (result) {
       res.json({ message: 'Message deleted successfully.' });
     } else {
       res.status(404).json({ message: 'Message not found.' });

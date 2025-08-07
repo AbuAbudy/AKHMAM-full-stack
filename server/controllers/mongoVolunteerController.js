@@ -1,15 +1,17 @@
 const path = require("path");
-const VolunteerContent = require("../models/VolunteerContent");
+const VolunteerContent = require("../models/mongo/volunteerContent"); // ✅ lowercase filename
 
 // GET all volunteer content, grouped by section
 exports.getVolunteerPageContent = async (req, res) => {
   try {
-    const rows = await VolunteerContent.findAll();
+    const rows = await VolunteerContent.find({});
     const content = {};
+
     rows.forEach((row) => {
       if (!content[row.section]) content[row.section] = {};
       content[row.section][row.key] = row.value;
     });
+
     res.json(content);
   } catch (error) {
     console.error("Error fetching volunteer content:", error);
@@ -21,6 +23,7 @@ exports.getVolunteerPageContent = async (req, res) => {
 exports.updateVolunteerContent = async (req, res) => {
   try {
     const { section, ...textFields } = req.body;
+
     if (!section) {
       return res.status(400).json({ message: "Section is required" });
     }
@@ -37,14 +40,11 @@ exports.updateVolunteerContent = async (req, res) => {
 
     await Promise.all(
       Object.entries(updates).map(async ([key, value]) => {
-        const [record, created] = await VolunteerContent.findOrCreate({
-          where: { section, key },
-          defaults: { value },
-        });
-        if (!created) {
-          record.value = value;
-          await record.save();
-        }
+        await VolunteerContent.findOneAndUpdate(
+          { section, key },
+          { value },
+          { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
       })
     );
 
@@ -72,12 +72,12 @@ exports.submitVolunteerApplication = async (req, res) => {
       email,
       phone,
       interest,
-      message: message || '',
+      message: message || "",
       timestamp,
     };
 
     await VolunteerContent.create({
-      section: 'applications',
+      section: "applications",
       key,
       value: JSON.stringify(data),
     });
@@ -92,10 +92,7 @@ exports.submitVolunteerApplication = async (req, res) => {
 // GET all volunteer applications
 exports.getVolunteerApplications = async (req, res) => {
   try {
-    const records = await VolunteerContent.findAll({
-      where: { section: 'applications' },
-      order: [['id', 'DESC']],
-    });
+    const records = await VolunteerContent.find({ section: "applications" }).sort({ _id: -1 });
 
     const applications = records.map((r) => {
       try {
@@ -116,11 +113,9 @@ exports.getVolunteerApplications = async (req, res) => {
 exports.deleteVolunteerApplication = async (req, res) => {
   try {
     const { key } = req.params;
-    const deleted = await VolunteerContent.destroy({
-      where: { section: 'applications', key },
-    });
+    const result = await VolunteerContent.deleteOne({ section: "applications", key });
 
-    if (!deleted) {
+    if (result.deletedCount === 0) {
       return res.status(404).json({ message: "Application not found" });
     }
 
