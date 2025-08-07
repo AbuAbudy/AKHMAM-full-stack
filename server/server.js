@@ -59,8 +59,12 @@ app.use('/api/projects', mongoProjectRoutes);
 app.use('/api/contact', mongoContactRoutes);
 app.use('/api/auth', mongoAuthRoutes);
 
-// ✅ MongoDB connection
-mongoose.connect(process.env.MONGODB_URI)
+// ✅ MongoDB connection with environment-based URI
+const mongoUri = process.env.NODE_ENV === 'production'
+  ? process.env.MONGODB_URI
+  : 'mongodb://127.0.0.1:27017/akhmamdb';
+
+mongoose.connect(mongoUri)
   .then(() => {
     console.log('✅ Connected to MongoDB');
     app.listen(PORT, () => {
@@ -70,3 +74,4 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch((err) => {
     console.error('❌ MongoDB connection failed:', err);
   });
+  

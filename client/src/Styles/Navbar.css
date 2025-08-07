@@ -31,7 +31,7 @@
 }
 
 .navbar .nav-links li a:hover {
-  text-decoration: underline;
+  text-decoration: none;
   color: gold;
 }
 
@@ -100,7 +100,7 @@ body.dark-mode .navbar .nav-links li a {
 
 body.dark-mode .navbar .nav-links li a:hover {
   color: #fff;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .dark-mode-toggle {
